@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+# 🧪 SharpChem.in — Modern Chemistry Learning Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**SharpChem.in** is a modern, responsive web platform built using **React.js** that helps students learn Chemistry through class-wise topics, practice papers, mechanisms, and more — all in one place.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+* 🎓 **Class-wise Content:** Organized for Classes 9–12
+* 🧾 **Practice Papers & PYQs:** Test your knowledge with real exam-style questions
+* ⚙️ **Mechanisms Section:** Understand organic and inorganic reaction mechanisms
+* ✍️ **Blog Section:** Learn chemistry tips, concepts, and updates
+* 🔐 **Authentication:** Login & Signup pages with clean, responsive UI
+* 📱 **Responsive Design:** Optimized for desktop, tablet, and mobile screens
+* 💙 **Modern UI:** Built with React + CSS3 using a consistent blue academic theme
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🧩 Tech Stack
 
-### `npm test`
+| Technology                         | Purpose                       |
+| ---------------------------------- | ----------------------------- |
+| **React.js**                       | Frontend framework            |
+| **HTML5 / CSS3**                   | Structure and styling         |
+| **React Router DOM**               | Page navigation               |
+| **Firebase (optional)**            | Authentication / Data storage |
+| **Vite / Create React App**        | Development setup             |
+| **Google Fonts (Poppins / Inter)** | Typography                    |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 📁 Folder Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+sharpchem/
+│
+├── src/
+│   ├── components/
+│   │   ├── HomePage.jsx
+│   │   ├── AcademicsPage.jsx
+│   │   ├── Login.jsx
+│   │   ├── Signup.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Footer.jsx
+│   │
+│   ├── styles/
+│   │   ├── HomePage.css
+│   │   ├── AcademicsPage.css
+│   │   ├── Login.css
+│   │   ├── Signup.css
+│   │   ├── Navbar.css
+│   │   ├── Footer.css
+│   │
+│   ├── App.js
+│   └── index.js
+│
+├── public/
+│   ├── index.html
+│   ├── logo.png
+│
+└── package.json
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ⚙️ Installation & Setup
 
-### `npm run eject`
+1. **Clone the repository**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   ```bash
+   git clone https://github.com/yourusername/sharpchem.git
+   cd sharpchem
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **Install dependencies**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   ```bash
+   npm install
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. **Run the development server**
 
-## Learn More
+   ```bash
+   npm start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+4. **Build for production**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   ```bash
+   npm run build
+   ```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🧠 Future Enhancements
 
-### Analyzing the Bundle Size
+* Integration with **Firebase Firestore** for real user data and progress tracking
+* Admin dashboard to upload and manage study materials
+* AI-powered chemistry problem solver
+* Bookmark and quiz history features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🧑‍💻 Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Contributions are welcome!
 
-### Advanced Configuration
+1. Fork the repository
+2. Create a new feature branch
+3. Commit your changes
+4. Submit a pull request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🪪 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+This project is licensed under the **MIT License** — free to use and modify with attribution.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## ✉️ Contact
+
+**Developer:** Harshit Parmar
+📧 [developersucks@gmail.com](mailto:developersucks@gmail.com)
+🌐 [SharpChem.in](#)
+
+---
+
+**"Learn Chemistry the Smart Way — with SharpChem.in"**
