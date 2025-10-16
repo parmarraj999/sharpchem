@@ -2,9 +2,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import HomePage from './page/home-page/homePage';
 import AcademicsPage from './page/academic-page/academic';
-import Navbar from './page/navbar/navbar';
+import Navbar from './components/navbar/navbar';
 import Login from './page/auth/login';
 import Signup from './page/auth/signup';
+import ChapterDetailPage from './page/chapter-detail/chapterDetail';
+import ClassDetail from './page/chapter-page/classPage';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path='/academic' element={<AcademicsPage/>} />
           <Route path='/login' element={<Login/>} />
           <Route path='/signup' element={<Signup/>} />
+          <Route path='/class/:id' element={<ClassDetail/>} />
+          <Route path='/chapter/:id' element={<ChapterDetailPage/>} />
         </Routes>
       </BrowserRouter>
      {/* <HomePage/> */}

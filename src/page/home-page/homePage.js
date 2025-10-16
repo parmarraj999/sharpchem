@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './homePage.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -8,6 +8,8 @@ const HomePage = () => {
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="homepage">
@@ -35,25 +37,25 @@ const HomePage = () => {
               <div className="card-icon">9</div>
               <h3>Class 9</h3>
               <p>Build strong foundations with fundamental concepts and basic reactions.</p>
-              <button className="card-button">Explore Topics</button>
+              <button className="card-button" onClick={()=>navigate('/class/9')}>Explore Topics</button>
             </div>
             <div className="academic-card">
               <div className="card-icon">10</div>
               <h3>Class 10</h3>
               <p>Master board exam concepts with detailed explanations and practice.</p>
-              <button className="card-button">Explore Topics</button>
+              <button className="card-button" onClick={()=>navigate('/class/10')}>Explore Topics</button>
             </div>
             <div className="academic-card">
               <div className="card-icon">11</div>
               <h3>Class 11</h3>
               <p>Dive deep into organic, inorganic, and physical chemistry essentials.</p>
-              <button className="card-button">Explore Topics</button>
+              <button className="card-button" onClick={()=>navigate('/class/11')}>Explore Topics</button>
             </div>
             <div className="academic-card">
               <div className="card-icon">12</div>
               <h3>Class 12</h3>
               <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button">Explore Topics</button>
+              <button className="card-button" onClick={()=>navigate('/class/12')}>Explore Topics</button>
             </div>
           </div>
         </div>
