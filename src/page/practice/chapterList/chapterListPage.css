@@ -1,0 +1,168 @@
+
+.chapter-list-container {
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* background-color: #f8fafc; */
+  height: fit-content;
+}
+
+.chapter-header {
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ch-back-button {
+ width: 45px;
+ height: 45px;
+ border: 1px solid grey;
+ border-radius: 10px;
+}
+
+
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1e293b;
+  /* margin: 0; */
+  /* text-align: left; */
+}
+
+.chapters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chapter-card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chapter-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.chapter-content {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.chapter-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.chapter-description {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.view-topics-button {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.view-topics-button:hover {
+  background-color: #059669;
+  transform: translateX(4px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.view-topics-button:active {
+  transform: translateX(2px);
+}
+
+.no-chapters {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.no-chapters p {
+  font-size: 18px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chapter-list-container {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .chapters-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .chapter-card {
+    padding: 20px;
+  }
+
+  .chapter-name {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 24px;
+  }
+
+  .back-button {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .chapter-card {
+    padding: 16px;
+  }
+
+  .view-topics-button {
+    width: 100%;
+  }
+}

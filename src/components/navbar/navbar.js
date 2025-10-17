@@ -27,7 +27,7 @@ function Navbar() {
           <Link to='/' onClick={() => setMobileMenuOpen(false)} href="#home">Home</Link>
           <a href="#about">About</a>
           <Link to='/academic' href="#academics" onClick={() => setMobileMenuOpen(false)}>Academics</Link>
-          <a href="#practice">Practice Papers</a>
+          <a href="#practice">Practice</a>
           <a href="#tests">PYQs & Tests</a>
           <a href="#mechanisms">Mechanisms</a>
           <a href="#blog">Blog</a>
