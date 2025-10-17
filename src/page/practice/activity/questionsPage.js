@@ -1,175 +1,172 @@
 import React, { useState } from 'react';
+import { ArrowLeft, Download, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
 import './questionsPage.css';
 
 const QuestionsPage = () => {
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  // Simulated URL params (in real app, these would come from React Router)
+  const [urlParams] = useState({
+    id: '12',
+    examType: 'neet',
+    chapterId: '3',
+    topicId: '5'
+  });
+
+  // Track which solutions are expanded
+  const [expandedSolutions, setExpandedSolutions] = useState({});
 
   // Dummy questions data
   const questions = [
     {
       id: 1,
-      questionText: "What is the chemical formula of water?",
+      questionText: "What is the normal resting heart rate for a healthy adult?",
       questionImage: null,
-      difficulty: "Easy"
+      solutionText: "The normal resting heart rate for a healthy adult ranges from 60 to 100 beats per minute (bpm). Athletes and people who are physically fit may have a lower resting heart rate, sometimes as low as 40 bpm. The heart rate can be influenced by factors such as age, fitness level, medications, and emotional state.",
+      solutionImage: null
     },
     {
       id: 2,
-      questionText: "Identify the functional group in the following compound:",
-      questionImage: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=300&fit=crop",
-      difficulty: "Medium"
+      questionText: "Identify the parts of the human heart labeled A, B, C, and D in the diagram below:",
+      questionImage: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=600&h=400&fit=crop",
+      solutionText: "A = Right Atrium, B = Left Ventricle, C = Aorta, D = Pulmonary Artery. The right atrium receives deoxygenated blood from the body, while the left ventricle pumps oxygenated blood to the entire body through the aorta.",
+      solutionImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop"
     },
     {
       id: 3,
-      questionText: null,
-      questionImage: "https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?w=400&h=300&fit=crop",
-      difficulty: "Hard"
+      questionText: "Describe the pathway of blood flow through the human heart, starting from the vena cava.",
+      questionImage: null,
+      solutionText: "Blood flow pathway: 1) Deoxygenated blood enters the right atrium via superior and inferior vena cava. 2) Blood flows through the tricuspid valve into the right ventricle. 3) From the right ventricle, blood is pumped through the pulmonary valve into the pulmonary artery to the lungs for oxygenation. 4) Oxygenated blood returns via pulmonary veins to the left atrium. 5) Blood passes through the mitral (bicuspid) valve into the left ventricle. 6) Finally, blood is pumped through the aortic valve into the aorta for systemic circulation.",
+      solutionImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop"
     },
     {
       id: 4,
-      questionText: "Calculate the pH of a 0.1M HCl solution.",
+      questionText: "Which chamber of the heart has the thickest wall and why?",
       questionImage: null,
-      difficulty: "Medium"
+      solutionText: "The left ventricle has the thickest myocardial wall among all heart chambers. This is because the left ventricle must generate enough pressure to pump oxygenated blood throughout the entire systemic circulation - to all organs and tissues of the body. The wall thickness is typically 8-12mm, which is about three times thicker than the right ventricle, which only needs to pump blood the short distance to the lungs (pulmonary circulation).",
+      solutionImage: null
     },
     {
       id: 5,
-      questionText: "Balance the following chemical equation:",
-      questionImage: "https://images.unsplash.com/photo-1554475901-4538ddfbccc2?w=400&h=300&fit=crop",
-      difficulty: "Easy"
+      questionText: "Observe the ECG trace shown below. What cardiac event does the P wave represent?",
+      questionImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop",
+      solutionText: "The P wave represents atrial depolarization, which causes the atria to contract. This wave occurs just before the atria push blood into the ventricles. A normal P wave is smooth, rounded, and precedes the QRS complex by about 0.12-0.20 seconds.",
+      solutionImage: "https://images.unsplash.com/photo-1582719366355-cdfe19f71f1c?w=600&h=400&fit=crop"
     },
     {
       id: 6,
-      questionText: "What is the IUPAC name of the compound CH₃-CH₂-CH₂-OH?",
+      questionText: "What is the function of the sinoatrial (SA) node in the heart?",
       questionImage: null,
-      difficulty: "Hard"
+      solutionText: "The sinoatrial (SA) node, located in the right atrium near the opening of the superior vena cava, serves as the heart's natural pacemaker. It spontaneously generates electrical impulses at a rate of 60-100 times per minute under normal resting conditions. These impulses spread through the atrial muscle causing atrial contraction, then travel to the atrioventricular (AV) node, which delays the signal briefly before it passes to the ventricles, coordinating the heart's rhythmic contractions.",
+      solutionImage: null
     }
   ];
 
-  const handleBack = () => {
-    window.history.back();
+  // Chapter and topic names (would normally come from API/database)
+  const chapterName = "Human Physiology";
+  const topicName = "Heart Structure and Function";
+
+  const toggleSolution = (questionId) => {
+    setExpandedSolutions(prev => ({
+      ...prev,
+      [questionId]: !prev[questionId]
+    }));
   };
 
-  const getDifficultyColor = (difficulty) => {
-    switch(difficulty) {
-      case 'Easy': return '#4caf50';
-      case 'Medium': return '#ff9800';
-      case 'Hard': return '#f44336';
-      default: return '#1e88e5';
-    }
+  const handleDownloadPDF = () => {
+    alert('Downloading PDF with all questions and solutions...\n\nIn production, this would generate and download a PDF file.');
+    // In real app: implement PDF generation using libraries like jsPDF or pdfmake
   };
+
+  const handleBack = () => {
+    alert('Going back to topics page');
+    // In real app: navigate(-1);
+  };
+
+  const pageTitle = `Class ${urlParams.id} – ${urlParams.examType.toUpperCase()} – Chapter ${urlParams.chapterId}: ${chapterName} – Topic: ${topicName}`;
 
   return (
-    <div className="question-page">
-      {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-content">
-          <button className="back-button" onClick={handleBack}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            Back
-          </button>
-          <h1 className="hero-title">Chemistry Questions</h1>
-          <p className="hero-subtitle">Master the fundamentals with our curated question set</p>
-          <div className="stats-bar">
-            <div className="stat-item">
-              <span className="stat-number">{questions.length}</span>
-              <span className="stat-label">Questions</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-number">3</span>
-              <span className="stat-label">Difficulty Levels</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-number">100%</span>
-              <span className="stat-label">Free</span>
-            </div>
+    <>
+
+      <div className="questions-container">
+        {/* Floating Back Button */}
+
+        {/* Page Header */}
+        <div className="page-header">
+        <button className="que-back-button" onClick={handleBack} aria-label="Go back">
+          <ArrowLeft size={24} />
+        </button>
+          <h1 className="page-title">{pageTitle}</h1>
+          <div className="questions-count">
+            <CheckCircle size={18} color="#4CAF50" />
+            <span>{questions.length} Practice Questions</span>
           </div>
         </div>
-        <div className="hero-decoration">
-          <div className="float-circle circle-1"></div>
-          <div className="float-circle circle-2"></div>
-          <div className="float-circle circle-3"></div>
+
+        {/* Questions List */}
+        <div className="questions-list">
+          {questions.map((question) => (
+            <div key={question.id} className="question-card">
+              <div className="question-header">
+                <div className="question-number">Q{question.id}</div>
+                <div className="question-content">
+                  <p className="question-text">{question.questionText}</p>
+                  {question.questionImage && (
+                    <img 
+                      src={question.questionImage} 
+                      alt={`Question ${question.id}`} 
+                      className="question-image"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <button 
+                className="show-solution-btn"
+                onClick={() => toggleSolution(question.id)}
+              >
+                {expandedSolutions[question.id] ? (
+                  <>
+                    Hide Solution
+                    <ChevronUp size={20} />
+                  </>
+                ) : (
+                  <>
+                    Show Solution
+                    <ChevronDown size={20} />
+                  </>
+                )}
+              </button>
+
+              <div className={`solution-section ${expandedSolutions[question.id] ? 'expanded' : ''}`}>
+                <div className="solution-content">
+                  <div className="solution-label">
+                    <CheckCircle size={16} />
+                    Solution
+                  </div>
+                  <p className="solution-text">{question.solutionText}</p>
+                  {question.solutionImage && (
+                    <img 
+                      src={question.solutionImage} 
+                      alt={`Solution ${question.id}`} 
+                      className="solution-image"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Download Section */}
+        <div className="download-section">
+          <h2 className="download-title">Get Complete Study Material</h2>
+          <p className="download-subtitle">Download all questions and solutions in PDF format</p>
+          <button className="download-btn" onClick={handleDownloadPDF}>
+            <Download size={22} />
+            Download Full Questions & Solutions
+          </button>
         </div>
       </div>
-
-      {/* Questions Grid */}
-      <section className="questions-container">
-        {questions.map((question, index) => (
-          <article 
-            key={question.id} 
-            className="question-card" 
-            style={{ animationDelay: `${index * 0.1}s` }}
-            onClick={() => setSelectedQuestion(question.id)}
-          >
-            <div className="card-header">
-              <div className="question-number">
-                <span className="q-label">Q</span>
-                <span className="q-num">{index + 1}</span>
-              </div>
-              <span 
-                className="difficulty-badge" 
-                style={{ backgroundColor: getDifficultyColor(question.difficulty) }}
-              >
-                {question.difficulty}
-              </span>
-            </div>
-            
-            <div className="question-content">
-              {question.questionText && (
-                <p className="question-text">{question.questionText}</p>
-              )}
-              
-              {question.questionImage && (
-                <div className="question-image-container">
-                  <img 
-                    src={question.questionImage} 
-                    alt={`Question ${index + 1}`}
-                    className="question-image"
-                    loading="lazy"
-                  />
-                  <div className="image-overlay">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                    </svg>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="card-footer">
-              <button className="action-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 11l3 3L22 4"/>
-                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                </svg>
-                Attempt
-              </button>
-              <button className="icon-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
-                </svg>
-              </button>
-              <button className="icon-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/>
-                  <circle cx="12" cy="5" r="1"/>
-                  <circle cx="12" cy="19" r="1"/>
-                </svg>
-              </button>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      {/* Floating Action Button */}
-      <button className="fab">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 6h18M3 12h18M3 18h18"/>
-        </svg>
-      </button>
-    </div>
+    </>
   );
 };
 
