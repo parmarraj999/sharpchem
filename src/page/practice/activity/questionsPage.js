@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
 import './questionsPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const QuestionsPage = () => {
   // Simulated URL params (in real app, these would come from React Router)
@@ -76,9 +77,9 @@ const QuestionsPage = () => {
     // In real app: implement PDF generation using libraries like jsPDF or pdfmake
   };
 
+  const navigate = useNavigate();
   const handleBack = () => {
-    alert('Going back to topics page');
-    // In real app: navigate(-1);
+    navigate(-1);
   };
 
   const pageTitle = `Class ${urlParams.id} – ${urlParams.examType.toUpperCase()} – Chapter ${urlParams.chapterId}: ${chapterName} – Topic: ${topicName}`;

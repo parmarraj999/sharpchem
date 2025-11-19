@@ -50,6 +50,9 @@ const TopicListPage = () => {
     const handleStartQuestions = (topicId) => {
         navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/questions`);
     };
+    const handleStartQuize = (topicId) => {
+        navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/quizes`);
+    };
 
     const handleBack = () => {
         alert('Going back to previous page');
@@ -73,7 +76,6 @@ const TopicListPage = () => {
                         <BookOpen size={40} />
                     </div>
                     <h1 className="page-title">{pageTitle}</h1>
-                    <p className="page-subtitle">Select a topic to start practicing questions</p>
                 </div>
 
                 {/* Topics Grid */}
@@ -87,6 +89,13 @@ const TopicListPage = () => {
                                 onClick={() => handleStartQuestions(topic.id)}
                             >
                                 Start Questions
+                                <span className="button-arrow">→</span>
+                            </button>
+                            <button
+                                className="quize-button"
+                                onClick={() => handleStartQuize(topic.id)}
+                            >
+                                Quizes
                                 <span className="button-arrow">→</span>
                             </button>
                         </div>

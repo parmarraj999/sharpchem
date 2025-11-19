@@ -167,4 +167,7 @@
   .section-title {
     font-size: 1.7rem;
   }
+  .navbar-container{
+    height: 55px;
+  }
 }

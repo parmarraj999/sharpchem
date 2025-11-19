@@ -34,12 +34,12 @@ const HomePage = () => {
 
   const handleTypeSelect = (type) => {
     setShowTypePopup(false);
-    if(type === 'questions'){
+    // if(type === 'questions'){
       navigate(`/class/${selectedClass}/${selectedExam}/chapterList`);
-    }
-    else{
-      navigate(`/class/${selectedClass}/${selectedExam}/${type}`);
-    }
+    // }
+    // else{
+    //   navigate(`/class/${selectedClass}/${selectedExam}/${type}`);
+    // }
   };
 
 

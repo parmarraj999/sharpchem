@@ -1,19 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './navbar.css'
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 
 function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const nabvar = useRef();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  const { pathname } = useLocation();
+
   return (
 
-    <header className="navbar">
+    <header className="navbar" style={pathname.startsWith('/profile/') ? {display:'none'} : {}}>
       <div className="navbar-container">
         <Link to='/' className="logo">SharpChem.in</Link>
 

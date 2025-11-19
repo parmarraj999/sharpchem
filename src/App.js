@@ -11,14 +11,18 @@ import QuizePage from './page/practice/activity/quizePage';
 import QuestionsPage from './page/practice/activity/questionsPage';
 import ChapterListPage from './page/practice/chapterList/chapterListPage';
 import TopicListPage from './page/practice/topic-page/topicPage';
+import ScrollToTop from './function/scrollToTop';
+import StudentProfile from './admin/studentProfile';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      <ScrollToTop/>
       <Navbar/>
         <Routes>
           <Route path='/' element={<HomePage/>} />
+          <Route path='/profile/:id' element={<StudentProfile/>} />
           <Route path='/academic' element={<AcademicsPage/>} />
           <Route path='/login' element={<Login/>} />
           <Route path='/signup' element={<Signup/>} />
@@ -27,6 +31,7 @@ function App() {
           <Route path='/class/:id/:examType/chapterList' element={<ChapterListPage/>} />
           <Route path='/class/:id/:examType/chapter/:chapterId/topics' element={<TopicListPage/>} />
           <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions'  element={<QuestionsPage/>}/>
+          <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizes'  element={<QuizePage/>}/>
           <Route path='/chapter/:id' element={<ChapterDetailPage/>} />
         </Routes>
       </BrowserRouter>
