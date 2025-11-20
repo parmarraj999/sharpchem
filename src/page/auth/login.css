@@ -185,6 +185,25 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.back-btn {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  border-radius: 10px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid grey;
+}
+
+
 .login-btn:hover {
   background: #1565c0;
   transform: translateY(-2px);

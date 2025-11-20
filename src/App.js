@@ -13,6 +13,7 @@ import ChapterListPage from './page/practice/chapterList/chapterListPage';
 import TopicListPage from './page/practice/topic-page/topicPage';
 import ScrollToTop from './function/scrollToTop';
 import StudentProfile from './admin/studentProfile';
+import StudentDetailsForm from './page/details/studentDetails';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage/>} />
           <Route path='/profile/:id' element={<StudentProfile/>} />
+          <Route path='/student-detail' element={<StudentDetailsForm/>} />
           <Route path='/academic' element={<AcademicsPage/>} />
           <Route path='/login' element={<Login/>} />
           <Route path='/signup' element={<Signup/>} />

@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import './login.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import GoogleLoginButton from '../../function/googleSignUp';
+import { ChevronLeft } from 'lucide-react';
+import { emailPasswordLogin } from '../../firebase/authFunctions';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,7 +23,7 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -35,28 +43,68 @@ const Login = () => {
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
     
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    
-    if (Object.keys(newErrors).length === 0) {
-      console.log('Login Form Data:', formData);
-      alert('Login successful! Check console for data.');
-    } else {
-      setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return setErrors(newErrors);
     }
+
+    setLoading(true);
+    setMessage("");
+
+    const response = await emailPasswordLogin(formData.email, formData.password);
+
+    if (response.success) {
+      setMessage("Login successful!");
+      window.localStorage.setItem('userId',response.user.uid)
+      window.localStorage.setItem('isLogIn',true) 
+      setTimeout(() => navigate("/"), 1000);
+    } else {
+      let errorMsg = response.error;
+
+      // Firebase-specific error handling
+      switch (response.errorCode) {
+        case "auth/user-not-found":
+          errorMsg = "No account found with this email.";
+          setErrors(prev => ({ ...prev, email: errorMsg }));
+          break;
+
+        case "auth/wrong-password":
+          errorMsg = "Incorrect password. Try again.";
+          setErrors(prev => ({ ...prev, password: errorMsg }));
+          break;
+
+        case "auth/invalid-email":
+          errorMsg = "Invalid email format.";
+          setErrors(prev => ({ ...prev, email: errorMsg }));
+          break;
+
+        default:
+          errorMsg = "Login failed. Please try again.";
+      }
+
+      setMessage(errorMsg);
+    }
+
+    setLoading(false);
   };
 
   return (
     <div className="login-container">
+      
+      <div className='back-btn' onClick={()=>navigate(-1)}>
+          <ChevronLeft size={25}/>
+      </div>
+
       <div className="login-wrapper">
+
         <div className="login-illustration">
           <div className="molecule-icon">
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -78,7 +126,10 @@ const Login = () => {
             <p className="login-subtitle">Welcome back! Login to continue learning.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="login-form">
+          {message && <p className="server-message" style={{color:'red'}}>{message}</p>}
+
+          <form className="login-form">
+
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <input
@@ -111,15 +162,19 @@ const Login = () => {
               <a href="#forgot">Forgot Password?</a>
             </div>
 
-            <button type="submit" className="login-btn">
-              Login
+            <button type="submit" className="login-btn" onClick={handleSubmit}>
+              {loading ? "Logging in..." : "Login"}
             </button>
+
+            <GoogleLoginButton/>
 
             <div className="login-footer">
               <p>Don't have an account? <Link to='/signup' className="signup-link">Sign up</Link></p>
             </div>
+
           </form>
         </div>
+
       </div>
     </div>
   );
