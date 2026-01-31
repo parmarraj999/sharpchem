@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './navbar.css'
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 
 function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { currentUser } = useAuth();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
   const { pathname } = useLocation();
-  const isLogIn = window.localStorage.getItem('isLogIn');
 
   return (
 
@@ -20,29 +21,37 @@ function Navbar() {
       <div className="navbar-container">
         <Link to='/' className="logo">SharpChem.in</Link>
 
-        <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
         <nav className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
           <Link to='/' onClick={() => setMobileMenuOpen(false)} href="#home">Home</Link>
-          <a href="#about">About</a>
           <Link to='/academic' href="#academics" onClick={() => setMobileMenuOpen(false)}>Academics</Link>
-          <a href="#practice">Practice</a>
-          <a href="#tests">PYQs & Tests</a>
-          <a href="#mechanisms">Mechanisms</a>
-          <a href="#blog">Blog</a>
-          <a href="#contact">Contact</a>
+          {/* <a href="#tests">PYQs & Tests</a> */}
+          <Link to='/practice' href="#practice" onClick={() => setMobileMenuOpen(false)}>Practice</Link>
+          {/* <a href="#mechanisms">Mechanisms</a> */}
+          <Link to='/blog' href="#blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+          <Link to='/about' href="#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+          <Link to='/contact' href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
         </nav>
         {
-          isLogIn ?
-            <Link to='/profile/123' style={{width:'45px',height:'45px',borderRadius:'50%'}}>
-              <img src='https://i.pinimg.com/1200x/38/6c/52/386c5283f14bdca0fa14e28dd18fb574.jpg' style={{borderRadius:'50%',width:'100%',height:"100%"}} />
-            </Link>
+          currentUser ?
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+              <Link to={`/profile/${currentUser.uid}`} style={{ width: '45px', height: '45px', borderRadius: '50%' }}>
+                <img src={currentUser.photoURL || 'https://i.pinimg.com/1200x/38/6c/52/386c5283f14bdca0fa14e28dd18fb574.jpg'} style={{ borderRadius: '50%', width: '100%', height: "100%" }} />
+              </Link>
+            </div>
             :
-            <Link to='/login' className="auth-button">Login / Register</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+              <Link to='/login' className="auth-button">Login / Register</Link>
+            </div>
         }
       </div>
     </header>

@@ -2,15 +2,32 @@ import React, { useState } from 'react';
 import './signup.css';
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../../function/googleSignUp';
-import { ChevronLeft } from 'lucide-react';
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  MapPin,
+  School,
+  GraduationCap,
+  ChevronLeft
+} from 'lucide-react';
 import { emailPasswordSignup } from '../../firebase/authFunctions';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebase.config';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    salutation: 'Mr/ms',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    contactNumber: '',
+    city: '',
+    state: '',
+    schoolName: '',
+    currentClass: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -19,208 +36,190 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  // Input Change
+  const stateOptions = [
+    "Andhra Pradesh", "Karnataka", "Kerala", "Tamil Nadu", "Telangana", "Maharashtra",
+    "Gujarat", "Rajasthan", "Delhi", "Uttar Pradesh", "Bihar", "West Bengal",
+    "Madhya Pradesh", "Punjab", "Haryana", "Jharkhand", "Odisha", "Chhattisgarh",
+    "Uttarakhand", "Himachal Pradesh", "Assam", "Goa", "Other",
+  ];
+
+  const classOptions = ["Class 9", "Class 10", "Class 11", "Class 12", "Droppers"];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  // Form Validation
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (formData.fullName.trim().length < 2) {
-      newErrors.fullName = 'Name must be at least 2 characters';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
+    if (!formData.firstName.trim()) newErrors.firstName = 'Required';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Required';
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email';
+    if (!formData.password || formData.password.length < 6) newErrors.password = 'Min 6 chars';
+    if (formData.contactNumber.length !== 10) newErrors.contactNumber = '10 digits required';
+    if (!formData.city.trim()) newErrors.city = 'Required';
+    if (!formData.state) newErrors.state = 'Required';
+    if (!formData.currentClass) newErrors.currentClass = 'Required';
     return newErrors;
   };
 
-  // Submit
   const handleSubmit = async (e) => {
-     e.preventDefault();
-  const newErrors = validateForm();
+    e.preventDefault();
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
 
-  if (Object.keys(newErrors).length > 0) {
-    return setErrors(newErrors);
-  }
+    setLoading(true);
+    setMessage("");
 
-  setLoading(true);
-  setMessage("");
+    const response = await emailPasswordSignup(formData.email, formData.password);
 
-  const response = await emailPasswordSignup(formData.email, formData.password);
-
-  if (response.success) {
-    setMessage("Signup successful!");
-    setTimeout(() => navigate("/"), 1000);
-  } 
-  else {
-    let errorMsg = response.error;
-
-    // Firebase Error Handling
-    switch (response.errorCode) {
-      case "auth/email-already-in-use":
-        errorMsg = "Email already registered. Try logging in.";
-        setErrors(prev => ({ ...prev, email: errorMsg }));
-        break;
-
-      case "auth/weak-password":
-        errorMsg = "Password must be at least 8 characters.";
-        setErrors(prev => ({ ...prev, password: errorMsg }));
-        break;
-
-      case "auth/invalid-email":
-        errorMsg = "Invalid email format.";
-        setErrors(prev => ({ ...prev, email: errorMsg }));
-        break;
-
-      default:
-        errorMsg = response.error || "Signup failed. Try again.";
+    if (response.success) {
+      setMessage("Account created successfully!");
+      await setDoc(doc(db, "users", response.user.uid), {
+        ...formData,
+        name: `${formData.firstName} ${formData.lastName}`,
+        createdAt: new Date()
+      });
+      setTimeout(() => navigate("/"), 2000);
+    } else {
+      setMessage(response.error || "Signup failed");
     }
-
-    setMessage(errorMsg);
-  }
-
-  setLoading(false);
+    setLoading(false);
   };
 
   return (
-    <div className="signup-container">
-      <div className='back-btn' onClick={() => navigate(-1)}>
-        <ChevronLeft size={25} />
-      </div>
+    <div className="modern-signup-container">
+      <div className="glass-blob blob-1"></div>
+      <div className="glass-blob blob-2"></div>
 
-      <div className="signup-wrapper">
-        
-        {/* LEFT SIDE ILLUSTRATION */}
-        <div className="signup-illustration">
-          <div className="flask-icon">
-            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 80 40 L 80 80 L 40 160 Q 40 180 60 180 L 140 180 Q 160 180 160 160 L 120 80 L 120 40 Z"
-                fill="#1e88e5" opacity="0.8" stroke="#0d47a1" strokeWidth="3" />
-              <ellipse cx="100" cy="40" rx="20" ry="8" fill="#1e88e5" opacity="0.9" />
-              <circle cx="70" cy="130" r="8" fill="#ffffff" opacity="0.6" />
-              <circle cx="100" cy="145" r="6" fill="#ffffff" opacity="0.6" />
-              <circle cx="125" cy="135" r="7" fill="#ffffff" opacity="0.6" />
-            </svg>
+      <button className="back-link" onClick={() => navigate(-1)}>
+        <ChevronLeft size={20} /> Back
+      </button>
+
+      <div className="modern-signup-card">
+        <div className="modern-signup-left">
+          <div className="brand-section">
+            <h1 className="logo-text">Sharp<span>Chem</span></h1>
+            <p className="logo-tagline">Master Chemistry with Interactive Learning</p>
           </div>
-          <h2>Begin Your Chemistry Journey</h2>
-          <p>Join thousands of students mastering chemistry with interactive lessons and expert guidance</p>
+          <div className="illustration-wrapper">
+            <div className="circle-glow"></div>
+            <div className="floating-icons">
+              {/* Decorative elements */}
+            </div>
+          </div>
         </div>
 
-        {/* RIGHT SIDE SIGNUP CARD */}
-        <div className="signup-card">
-          <div className="signup-header">
-            <h1 className="signup-logo">SharpChem.in</h1>
-            <p className="signup-subtitle">Create your free Chemistry learning account.</p>
+        <div className="modern-signup-right">
+          <div className="form-header">
+            <h2>Create Account</h2>
+            <p>Join our community of learners today</p>
           </div>
 
-          <form className="signup-form" onSubmit={handleSubmit}>
-
-            <div className="form-group">
-              <label htmlFor="fullName">Full Name</label>
-              <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className={errors.fullName ? 'error' : ''}
-              />
-              {errors.fullName && <span className="error-message">{errors.fullName}</span>}
+          <form className="modern-form" onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className={`modern-input-group tiny ${errors.firstName || errors.lastName ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <User className="input-icon" size={18} />
+                  <select name="salutation" value={formData.salutation} onChange={handleChange}>
+                    <option value="Mr/ms">Mr/Ms</option>
+                    <option value="Mr">Mr.</option>
+                    <option value="Ms">Ms.</option>
+                  </select>
+                </div>
+              </div>
+              <div className={`modern-input-group flex-1 ${errors.firstName ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} />
+                </div>
+              </div>
+              <div className={`modern-input-group flex-1 ${errors.lastName ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} />
+                </div>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className={errors.email ? 'error' : ''}
-              />
-              {errors.email && <span className="error-message">{errors.email}</span>}
+            <div className="form-row">
+              <div className={`modern-input-group ${errors.email ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <Mail className="input-icon" size={18} />
+                  <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} />
+                </div>
+              </div>
+              <div className={`modern-input-group ${errors.password ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <Lock className="input-icon" size={18} />
+                  <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+                </div>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Create a password"
-                className={errors.password ? 'error' : ''}
-              />
-              {errors.password && <span className="error-message">{errors.password}</span>}
+            <div className={`modern-input-group full ${errors.contactNumber ? 'error' : ''}`}>
+              <div className="input-wrapper">
+                <Phone className="input-icon" size={18} />
+                <input
+                  type="text"
+                  name="contactNumber"
+                  placeholder="Contact Number"
+                  value={formData.contactNumber}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    setFormData({ ...formData, contactNumber: value });
+                  }}
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm your password"
-                className={errors.confirmPassword ? 'error' : ''}
-              />
-              {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+            <div className="form-row">
+              <div className={`modern-input-group ${errors.city ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <MapPin className="input-icon" size={18} />
+                  <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} />
+                </div>
+              </div>
+              <div className={`modern-input-group ${errors.state ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <select name="state" value={formData.state} onChange={handleChange}>
+                    <option value="">Select State</option>
+                    {stateOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
 
-            {/* Signup Button */}
-            <button type="submit" className="signup-btn" disabled={loading}>
-              {loading ? "Creating Account..." : "Sign Up"}
+            <div className="form-row">
+              <div className="modern-input-group flex-2">
+                <div className="input-wrapper">
+                  <School className="input-icon" size={18} />
+                  <input type="text" name="schoolName" placeholder="School Name (Optional)" value={formData.schoolName} onChange={handleChange} />
+                </div>
+              </div>
+              <div className={`modern-input-group flex-1 ${errors.currentClass ? 'error' : ''}`}>
+                <div className="input-wrapper">
+                  <GraduationCap className="input-icon" size={18} />
+                  <select name="currentClass" value={formData.currentClass} onChange={handleChange}>
+                    <option value="">Class</option>
+                    {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" className="modern-submit-btn" disabled={loading}>
+              {loading ? <span className="loader"></span> : "Sign Up Now"}
             </button>
 
-            {/* GOOGLE SIGNUP */}
-            <GoogleLoginButton />
+            {message && <div className={`form-message ${message.includes('success') ? 'success' : 'error'}`}>{message}</div>}
 
-            {/* Message */}
-            {message && <p className="signup-message">{message}</p>}
-
-            <div className="signup-footer">
-              <p>Already have an account? <Link to='/login' className="login-link">Login</Link></p>
+            <div className="form-footer">
+              <p>Already have an account? <Link to="/login">Login</Link></p>
+              <div className="divider"><span>OR</span></div>
+              <GoogleLoginButton />
             </div>
-
           </form>
         </div>
-
       </div>
     </div>
   );

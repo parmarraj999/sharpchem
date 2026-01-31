@@ -1,0 +1,208 @@
+.quiz-list-page {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.quiz-list-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #4a5568;
+}
+
+.back-button:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    color: #2563eb;
+}
+
+.header-section {
+    margin-top: 4rem;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.header-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.page-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+    background: linear-gradient(to right, #1a202c, #4a5568);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+    margin: 0.5rem 0 0 0;
+    color: #4a5568;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.quiz-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.quiz-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.1);
+}
+
+.quiz-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.quiz-tags {
+    margin-bottom: 1.25rem;
+}
+
+.difficulty-tag {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.easy {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.medium {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.hard {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.quiz-meta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.quiz-card-footer {
+    padding-top: 1.5rem;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.attempts-text {
+    font-size: 0.8rem;
+    color: #a0aec0;
+}
+
+.start-quiz-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 8px 16px;
+    background: #f8faff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.quiz-card:hover .start-quiz-btn {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .quiz-grid {
+        grid-template-columns: 1fr;
+    }
+}

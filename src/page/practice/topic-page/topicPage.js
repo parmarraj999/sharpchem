@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import "./topicPage.css"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const TopicListPage = () => {
-    // Simulated URL params (in real app, these would come from React Router)
+    const params = useParams();
     const [urlParams] = useState({
-        id: '11',
-        examType: 'jee',
-        chapterId: '1'
+        id: params.id || '11',
+        examType: params.examType || 'jee',
+        chapterId: params.chapterId || '1'
     });
 
     // Dummy topic data
@@ -51,7 +51,7 @@ const TopicListPage = () => {
         navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/questions`);
     };
     const handleStartQuize = (topicId) => {
-        navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/quizes`);
+        navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/quizzes`);
     };
 
     const handleBack = () => {

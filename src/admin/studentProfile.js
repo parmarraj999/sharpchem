@@ -1,279 +1,273 @@
-import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { User, BookOpen, Target, Clock, TrendingUp, FileText, Lock, Edit, Download, Award, Zap, Calendar, Mail, Phone, ChevronRight, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  User,
+  BookOpen,
+  Target,
+  Clock,
+  TrendingUp,
+  FileText,
+  Lock,
+  Edit,
+  Download,
+  Award,
+  Zap,
+  Calendar,
+  Mail,
+  Phone,
+  ChevronRight,
+  Star,
+  MapPin,
+  School,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Bell
+} from 'lucide-react';
 import './studentProfile.css';
-import { useLocation } from 'react-router-dom';
-
-// Dummy data for the graph
-const performanceData = [
-  { day: 'Mon', score: 65, questions: 45 },
-  { day: 'Tue', score: 78, questions: 52 },
-  { day: 'Wed', score: 82, questions: 60 },
-  { day: 'Thu', score: 75, questions: 48 },
-  { day: 'Fri', score: 88, questions: 65 },
-  { day: 'Sat', score: 92, questions: 70 },
-  { day: 'Sun', score: 85, questions: 58 }
-];
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebase.config';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const StudentProfile = () => {
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
+  const [greeting, setGreeting] = useState("");
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  const { pathname } = useLocation();
+  useEffect(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) setGreeting("Good Morning");
+    else if (hours < 18) setGreeting("Good Afternoon");
+    else setGreeting("Good Evening");
 
-  console.log(pathname)
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        navigate('/login');
+      }
+      setLoading(false);
+    });
 
-  const studentData = {
-    name: "Rahul Sharma",
-    class: "12",
-    examType: "JEE",
-    email: "rahul.sharma@email.com",
-    phone: "+91 98765 43210",
-    joinedDate: "Jan 15, 2024",
-    profilePhoto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop",
-    stats: {
-      quizzesAttempted: 45,
-      questionsSolved: 1247,
-      accuracy: 87.5,
-      studyTime: "142h 30m"
-    },
-    recentQuizzes: [
-      { id: 1, title: "Physics - Electrostatics", score: 85, date: "2 hours ago" },
-      { id: 2, title: "Mathematics - Calculus", score: 92, date: "1 day ago" },
-      { id: 3, title: "Chemistry - Organic", score: 78, date: "2 days ago" }
-    ],
-    recentChapters: [
-      { id: 1, subject: "Physics", chapter: "Electromagnetic Induction", progress: 75 },
-      { id: 2, subject: "Mathematics", chapter: "3D Geometry", progress: 60 },
-      { id: 3, subject: "Chemistry", chapter: "Coordination Compounds", progress: 90 }
-    ]
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.localStorage.removeItem('isLogIn');
+    navigate('/login');
   };
 
-  const handleDownloadReport = () => {
-    alert('Downloading performance report...');
+  if (loading) {
+    return (
+      <div className="dashboard-loader">
+        <div className="spinner"></div>
+        <p>Initializing Dashboard...</p>
+      </div>
+    );
+  }
+
+  // Fallback dummy data for missing stats
+  const stats = userData?.stats || {
+    quizzesAttempted: 0,
+    questionsSolved: 0,
+    accuracy: 0,
+    studyTime: "0h"
   };
+
+  const performanceData = [
+    { day: 'Mon', score: 40 }, { day: 'Tue', score: 60 }, { day: 'Wed', score: 45 },
+    { day: 'Thu', score: 70 }, { day: 'Fri', score: 85 }, { day: 'Sat', score: 90 },
+    { day: 'Sun', score: 80 }
+  ];
 
   return (
-    <div className="student-profile-container">
-      <div className="left-panel">
-        <div className="student-card">
-          <div className="profile-photo-container">
-            <img src={studentData.profilePhoto} alt={studentData.name} className="profile-photo" />
-            <div className="status-indicator"></div>
-          </div>
-          
-          <h2 className="student-name">{studentData.name}</h2>
-          
-          <div className="student-badges">
-            <span className="badge badge-class">
-              <Award size={14} />
-              Class {studentData.class}
-            </span>
-            <span className="badge badge-exam">
-              <Target size={14} />
-              {studentData.examType}
-            </span>
-          </div>
-
-          <div className="student-details">
-            <div className="detail-item">
-              <Mail size={18} />
-              <span>{studentData.email}</span>
-            </div>
-            <div className="detail-item">
-              <Phone size={18} />
-              <span>{studentData.phone}</span>
-            </div>
-            <div className="detail-item">
-              <Calendar size={18} />
-              <span>Joined: {studentData.joinedDate}</span>
-            </div>
-          </div>
-
-          <div className="action-buttons">
-            <button className="btn btn-primary" onClick={() => setShowEditModal(true)}>
-              <Edit size={18} />
-              Edit Profile
-            </button>
-            <button className="btn btn-secondary" onClick={() => setShowPasswordModal(true)}>
-              <Lock size={18} />
-              Change Password
-            </button>
-          </div>
+    <div className="dashboard-root">
+      {/* Sidebar - Desktop Only */}
+      <aside className="dashboard-sidebar">
+        <div className="sidebar-brand">
+          <LayoutDashboard size={24} />
+          <span>SharpChem</span>
         </div>
-      </div>
+        <nav className="sidebar-nav">
+          <Link to="/" className="nav-item active"><LayoutDashboard size={20} /> Dashboard</Link>
+          <Link to="/academic" className="nav-item"><BookOpen size={20} /> My Courses</Link>
+          <Link to="#" className="nav-item"><Target size={20} /> Practice</Link>
+          <Link to="#" className="nav-item"><Star size={20} /> Quizzes</Link>
+          <div className="nav-divider"></div>
+          <Link to="#" className="nav-item"><Settings size={20} /> Settings</Link>
+          <button onClick={handleLogout} className="nav-item logout-btn"><LogOut size={20} /> Logout</button>
+        </nav>
+      </aside>
 
-      <div className="right-panel">
-        <div className="dashboard-header">
-          <h1>Dashboard</h1>
-          <p>Track your learning journey and achieve your goals</p>
-        </div>
-
-        <div className="summary-grid">
-          <div className="summary-box box-purple">
-            <div className="summary-icon">
-              <FileText size={28} />
-            </div>
-            <div className="summary-content">
-              <h3>{studentData.stats.quizzesAttempted}</h3>
-              <p>Quizzes Attempted</p>
+      {/* Main Content Area */}
+      <main className="dashboard-main">
+        {/* Header */}
+        <header className="dashboard-top-bar">
+          <div className="welcome-text">
+            <h1>{greeting}, {userData?.name?.split(' ')[0] || 'Student'}! 👋</h1>
+            <p>Let's continue your chemistry excellence today.</p>
+          </div>
+          <div className="top-bar-actions">
+            <button className="icon-btn"><Bell size={20} /></button>
+            <div className="user-mini-profile">
+              <img src={userData?.profilePhoto || "https://ui-avatars.com/api/?name=" + userData?.name} alt="avatar" />
+              <div className="user-info-text">
+                <span className="user-name">{userData?.name}</span>
+                <span className="user-role">{userData?.currentClass || 'Student'}</span>
+              </div>
             </div>
           </div>
+        </header>
 
-          <div className="summary-box box-blue">
-            <div className="summary-icon">
-              <BookOpen size={28} />
-            </div>
-            <div className="summary-content">
-              <h3>{studentData.stats.questionsSolved}</h3>
-              <p>Questions Solved</p>
-            </div>
-          </div>
+        {/* Dashboard Grid */}
+        <div className="dashboard-content-grid">
 
-          <div className="summary-box box-green">
-            <div className="summary-icon">
-              <Target size={28} />
+          {/* Stats Section */}
+          <section className="stats-row">
+            <div className="stat-card glass-morph">
+              <div className="stat-icon purple"><FileText size={24} /></div>
+              <div className="stat-details">
+                <span className="stat-value">{stats.quizzesAttempted}</span>
+                <span className="stat-label">Quizzes</span>
+              </div>
             </div>
-            <div className="summary-content">
-              <h3>N/A</h3>
-              {/* <h3>{studentData.stats.accuracy}%</h3> */}
-              <p>Accuracy</p>
+            <div className="stat-card glass-morph">
+              <div className="stat-icon blue"><BookOpen size={24} /></div>
+              <div className="stat-details">
+                <span className="stat-value">{stats.questionsSolved}</span>
+                <span className="stat-label">Questions</span>
+              </div>
             </div>
-          </div>
+            <div className="stat-card glass-morph">
+              <div className="stat-icon green"><Target size={24} /></div>
+              <div className="stat-details">
+                <span className="stat-value">{stats.accuracy}%</span>
+                <span className="stat-label">Accuracy</span>
+              </div>
+            </div>
+            <div className="stat-card glass-morph">
+              <div className="stat-icon orange"><Clock size={24} /></div>
+              <div className="stat-details">
+                <span className="stat-value">{stats.studyTime}</span>
+                <span className="stat-label">Study Time</span>
+              </div>
+            </div>
+          </section>
 
-          {/* <div className="summary-box box-orange">
-            <div className="summary-icon">
-              <Clock size={28} />
-            </div>
-            <div className="summary-content">
-              <h3>{studentData.stats.studyTime}</h3>
-              <p>Study Time</p>
-            </div>
-          </div> */}
-        </div>
+          {/* Performance Chart & Recent Activity */}
+          <div className="content-columns">
+            <section className="chart-section glass-morph">
+              <div className="section-title">
+                <TrendingUp size={20} />
+                <h3>Weekly Performance</h3>
+              </div>
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={250}>
+                  <AreaChart data={performanceData}>
+                    <defs>
+                      <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                    <YAxis hide />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#4f46e5"
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorScore)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
 
-        {/* <div className="graph-section">
-          <div className="section-header">
-            <h2>
-              <TrendingUp size={24} />
-              Weekly Performance
-            </h2>
-            <div className="trend-badge">
-              <Zap size={14} />
-              +12% this week
-            </div>
-          </div>
-
-          <div className="graph-container">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={performanceData}>
-                <defs>
-                  <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1a1a1a" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#1a1a1a" stopOpacity={0.05}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="day" stroke="#6b7280" style={{ fontSize: '13px', fontWeight: 600 }} />
-                <YAxis stroke="#6b7280" style={{ fontSize: '13px', fontWeight: 600 }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    background: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                    padding: '12px 16px'
-                  }}
-                  labelStyle={{ fontWeight: 700, color: '#1a1a1a' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="score" 
-                  stroke="#1a1a1a" 
-                  strokeWidth={3}
-                  fill="url(#colorScore)"
-                  dot={{ fill: '#1a1a1a', r: 6, strokeWidth: 2, stroke: '#fff' }}
-                  activeDot={{ r: 8, strokeWidth: 2 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div> */}
-
-        <div className="activity-grid">
-          <div className="activity-card">
-            <h3>
-              <Star size={20} />
-              Recent Quizzes
-            </h3>
-            <div className="activity-list">
-              {studentData.recentQuizzes.map(quiz => (
-                <div key={quiz.id} className="activity-item">
+            <section className="recent-activity glass-morph">
+              <div className="section-title">
+                <Zap size={20} />
+                <h3>Continue Learning</h3>
+              </div>
+              <div className="activity-list">
+                <div className="activity-item">
+                  <div className="activity-thumb"><BookOpen size={18} /></div>
                   <div className="activity-info">
-                    <h4>{quiz.title}</h4>
-                    <span className="activity-date">{quiz.date}</span>
+                    <h4>Atomic Structure</h4>
+                    <p>Chapter 4 • 65% Completed</p>
+                    <div className="mini-progress"><div className="fill" style={{ width: '65%' }}></div></div>
                   </div>
-                  <div className={`activity-score ${quiz.score >= 80 ? 'high' : 'medium'}`}>
-                    {quiz.score}%
-                  </div>
+                  <ChevronRight size={18} className="arrow" />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="activity-card">
-            <h3>
-              <BookOpen size={20} />
-              Recently Viewed Chapters
-            </h3>
-            <div className="activity-list">
-              {studentData.recentChapters.map(chapter => (
-                <div key={chapter.id} className="activity-item chapter-item">
+                <div className="activity-item">
+                  <div className="activity-thumb"><TrendingUp size={18} /></div>
                   <div className="activity-info">
-                    <h4>{chapter.chapter}</h4>
-                    <span className="activity-date">{chapter.subject}</span>
+                    <h4>Thermodynamics Quiz</h4>
+                    <p>Practice Set • Ready for review</p>
                   </div>
-                  <div className="progress-bar-container">
-                    <div className="progress-bar" style={{ width: `${chapter.progress}%` }}></div>
-                    <span className="progress-text">{chapter.progress}%</span>
-                  </div>
+                  <ChevronRight size={18} className="arrow" />
                 </div>
-              ))}
+              </div>
+              <button className="view-all-btn">View All Learning Path</button>
+            </section>
+          </div>
+
+          {/* User Details Card */}
+          <section className="profile-summary-section glass-morph">
+            <div className="user-profile-identity">
+              <img src={userData?.profilePhoto || "https://ui-avatars.com/api/?name=" + userData?.name} alt="profile" />
+              <div className="identity-text">
+                <h3>{userData?.name}</h3>
+                <p>Class {userData?.currentClass} • {userData?.examType || 'Aspirant'}</p>
+              </div>
+              <button className="edit-btn"><Edit size={16} /> Edit</button>
             </div>
-          </div>
-        </div>
+            <div className="profile-details-grid">
+              <div className="pd-item">
+                <Mail size={16} />
+                <span>{userData?.email}</span>
+              </div>
+              <div className="pd-item">
+                <Phone size={16} />
+                <span>{userData?.contactNumber || 'Add Phone'}</span>
+              </div>
+              <div className="pd-item">
+                <MapPin size={16} />
+                <span>{userData?.city}, {userData?.state}</span>
+              </div>
+              <div className="pd-item">
+                <School size={16} />
+                <span>{userData?.schoolName || 'Not specified'}</span>
+              </div>
+            </div>
+          </section>
 
-        <div className="download-section">
-          <button className="btn-download" onClick={handleDownloadReport}>
-            <Download size={22} />
-            Download Performance Report (PDF)
-          </button>
         </div>
-      </div>
+      </main>
 
-      {showEditModal && (
-        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Edit Profile</h2>
-            <p>Update your personal information and preferences to keep your profile current.</p>
-            <button className="btn btn-primary" onClick={() => setShowEditModal(false)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showPasswordModal && (
-        <div className="modal-overlay" onClick={() => setShowPasswordModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Change Password</h2>
-            <p>Create a strong password to keep your account secure.</p>
-            <button className="btn btn-primary" onClick={() => setShowPasswordModal(false)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Mobile Navigation Bar */}
+      <nav className="mobile-nav-bar">
+        <Link to="/" className="active"><LayoutDashboard size={20} /></Link>
+        <Link to="/academic"><BookOpen size={20} /></Link>
+        <Link to="#"><Target size={20} /></Link>
+        <Link to="#"><User size={20} /></Link>
+      </nav>
     </div>
   );
 };

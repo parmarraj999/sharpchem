@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, CheckCircle, XCircle, Award } from 'lucide-react';
 import './quizePage.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const QuizePage = () => {
-  // Simulated URL params
+  // Actual URL params
+  const params = useParams();
   const [urlParams] = useState({
-    id: '12',
-    examType: 'jee',
-    chapterId: '3',
-    topicId: '5',
-    quizId: '1'
+    id: params.id || '12',
+    examType: params.examType || 'jee',
+    chapterId: params.chapterId || '1',
+    topicId: params.topicId || '1',
+    quizId: params.quizId || '1'
   });
+
+  // Import useParams
+  // (Adding this to the top of the file in the next step or here if I can)
 
   // Quiz state
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -107,7 +111,7 @@ const QuizePage = () => {
   // Timer countdown
   useEffect(() => {
     if (showResults) return;
-    
+
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -185,9 +189,9 @@ const QuizePage = () => {
           <div className="progress-info">
             <span>Answered: {Object.keys(selectedAnswers).length}/{quizData.questions.length}</span>
             <div className="progress-bar-container">
-              <div 
-                className="progress-bar" 
-                style={{ width: `${(Object.keys(selectedAnswers).length / quizData.questions.length) * 100}%` }} 
+              <div
+                className="progress-bar"
+                style={{ width: `${(Object.keys(selectedAnswers).length / quizData.questions.length) * 100}%` }}
               />
             </div>
             <span>{Math.round((Object.keys(selectedAnswers).length / quizData.questions.length) * 100)}%</span>
@@ -198,16 +202,16 @@ const QuizePage = () => {
         {showResults && (
           <div className="results-summary">
             <div className={`results-icon ${calculateScore() >= quizData.questions.length * 0.6 ? 'success-icon' : 'fail-icon'}`}>
-              {calculateScore() >= quizData.questions.length * 0.6 ? 
-                <CheckCircle size={40} /> : 
+              {calculateScore() >= quizData.questions.length * 0.6 ?
+                <CheckCircle size={40} /> :
                 <Award size={40} />
               }
             </div>
-            
+
             <h2 className="results-title">
               {calculateScore() >= quizData.questions.length * 0.6 ? 'Great Job!' : 'Keep Learning!'}
             </h2>
-            
+
             <div className="results-score">
               {Math.round((calculateScore() / quizData.questions.length) * 100)}%
             </div>
@@ -240,7 +244,7 @@ const QuizePage = () => {
           {quizData.questions.map((question, index) => {
             const isCorrect = showResults && selectedAnswers[index] === question.correctAnswer;
             const isIncorrect = showResults && selectedAnswers[index] && selectedAnswers[index] !== question.correctAnswer;
-            
+
             return (
               <div key={question.id} className="question-card">
                 <div className="question-header">
@@ -269,9 +273,9 @@ const QuizePage = () => {
                 <div className="question-content">
                   <div className="question-text">{question.questionText}</div>
                   {question.questionImage && (
-                    <img 
-                      src={question.questionImage} 
-                      alt="Question" 
+                    <img
+                      src={question.questionImage}
+                      alt="Question"
                       className="question-image"
                     />
                   )}
@@ -283,7 +287,7 @@ const QuizePage = () => {
                     const isSelected = selectedAnswers[index] === option.id;
                     const isCorrectOption = showResults && option.id === question.correctAnswer;
                     const isWrongSelection = showResults && isSelected && option.id !== question.correctAnswer;
-                    
+
                     return (
                       <div
                         key={option.id}
@@ -294,9 +298,9 @@ const QuizePage = () => {
                         <div className="option-content">
                           <div className="option-text">{option.text}</div>
                           {option.image && (
-                            <img 
-                              src={option.image} 
-                              alt={`Option ${option.id}`} 
+                            <img
+                              src={option.image}
+                              alt={`Option ${option.id}`}
                               className="option-image"
                             />
                           )}
@@ -325,12 +329,12 @@ const QuizePage = () => {
         {!showResults && (
           <div className="submit-section">
             <div className={`submit-info ${allAnswered ? 'complete' : ''}`}>
-              {allAnswered ? 
-                '✓ All questions answered! Ready to submit.' : 
+              {allAnswered ?
+                '✓ All questions answered! Ready to submit.' :
                 `Please answer all questions (${Object.keys(selectedAnswers).length}/${quizData.questions.length})`
               }
             </div>
-            <button 
+            <button
               className="submit-btn"
               onClick={handleSubmitQuiz}
               disabled={!allAnswered}

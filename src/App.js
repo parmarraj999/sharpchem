@@ -11,33 +11,42 @@ import QuizePage from './page/practice/activity/quizePage';
 import QuestionsPage from './page/practice/activity/questionsPage';
 import ChapterListPage from './page/practice/chapterList/chapterListPage';
 import TopicListPage from './page/practice/topic-page/topicPage';
+import QuizListPage from './page/practice/activity/quizListPage';
 import ScrollToTop from './function/scrollToTop';
 import StudentProfile from './admin/studentProfile';
 import StudentDetailsForm from './page/details/studentDetails';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+
   return (
     <div className="App">
-      <BrowserRouter>
-      <ScrollToTop/>
-      <Navbar/>
-        <Routes>
-          <Route path='/' element={<HomePage/>} />
-          <Route path='/profile/:id' element={<StudentProfile/>} />
-          <Route path='/student-detail' element={<StudentDetailsForm/>} />
-          <Route path='/academic' element={<AcademicsPage/>} />
-          <Route path='/login' element={<Login/>} />
-          <Route path='/signup' element={<Signup/>} />
-          <Route path='/class/:id' element={<ClassDetail/>} />
-          <Route path='/class/:id/:examType/quizzes' element={<QuizePage/>}/>
-          <Route path='/class/:id/:examType/chapterList' element={<ChapterListPage/>} />
-          <Route path='/class/:id/:examType/chapter/:chapterId/topics' element={<TopicListPage/>} />
-          <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions'  element={<QuestionsPage/>}/>
-          <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizes'  element={<QuizePage/>}/>
-          <Route path='/chapter/:id' element={<ChapterDetailPage/>} />
-        </Routes>
-      </BrowserRouter>
-     {/* <HomePage/> */}
+      <AuthProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Navbar />
+          <Routes>
+            {/* Public Routes */}
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<Signup />} />
+
+            {/* Protected Routes */}
+            <Route path='/' element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path='/profile/:id' element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
+            <Route path='/student-detail' element={<ProtectedRoute><StudentDetailsForm /></ProtectedRoute>} />
+            <Route path='/academic' element={<ProtectedRoute><AcademicsPage /></ProtectedRoute>} />
+            <Route path='/class/:id' element={<ProtectedRoute><ClassDetail /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/quizzes' element={<ProtectedRoute><QuizePage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapterList' element={<ProtectedRoute><ChapterListPage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapter/:chapterId/topics' element={<ProtectedRoute><TopicListPage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes' element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId' element={<ProtectedRoute><QuizePage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions' element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
+            <Route path='/chapter/:id' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }

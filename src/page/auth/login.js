@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './login.css';
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../../function/googleSignUp';
@@ -96,10 +96,17 @@ const Login = () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    const isLogIn = window.localStorage.getItem('isLogIn');
+    if (isLogIn) {
+      navigate('/');
+    }
+  }, []);
+
   return (
     <div className="login-container">
       
-      <div className='back-btn' onClick={()=>navigate(-1)}>
+      <div className='back-btn' onClick={()=>navigate('/')}>
           <ChevronLeft size={25}/>
       </div>
 

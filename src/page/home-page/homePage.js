@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import PopupModal from '../../components/class-popup/classPopUp';
 
+import InitialPopup from '../../components/initial-popup/InitialPopup';
+
 const HomePage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  useEffect(() => {
+    // Show popup on mount
+    setShowWelcomePopup(true);
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -35,7 +43,7 @@ const HomePage = () => {
   const handleTypeSelect = (type) => {
     setShowTypePopup(false);
     // if(type === 'questions'){
-      navigate(`/class/${selectedClass}/${selectedExam}/chapterList`);
+    navigate(`/class/${selectedClass}/${selectedExam}/chapterList`);
     // }
     // else{
     //   navigate(`/class/${selectedClass}/${selectedExam}/${type}`);
@@ -45,6 +53,12 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      {/* Welcome Popup */}
+      <InitialPopup
+        isOpen={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
+
       {/* Navbar */}
       <PopupModal
         isOpen={showExamPopup}
@@ -109,6 +123,30 @@ const HomePage = () => {
               <h3>Class 12</h3>
               <p>Ace boards and competitive exams with advanced problem-solving.</p>
               <button className="card-button" onClick={() => handleClassClick('12')}>Explore Topics</button>
+            </div>
+            <div className="academic-card">
+              <div className="card-icon">11</div>
+              <h3>Class 11 ( NEET )</h3>
+              <p>Ace boards and competitive exams with advanced problem-solving.</p>
+              <button className="card-button" onClick={() => navigate('/class/11/neet/chapterList')}>Explore Topics</button>
+            </div>
+            <div className="academic-card">
+              <div className="card-icon">11</div>
+              <h3>Class 11( JEE )</h3>
+              <p>Ace boards and competitive exams with advanced problem-solving.</p>
+              <button className="card-button" onClick={() => navigate('/class/11/jee/chapterList')}>Explore Topics</button>
+            </div>
+            <div className="academic-card">
+              <div className="card-icon">12</div>
+              <h3>Class 12 ( NEET )</h3>
+              <p>Ace boards and competitive exams with advanced problem-solving.</p>
+              <button className="card-button" onClick={() => navigate('/class/12/neet/chapterList')}>Explore Topics</button>
+            </div>
+            <div className="academic-card">
+              <div className="card-icon">12</div>
+              <h3>Class 12 ( JEE )</h3>
+              <p>Ace boards and competitive exams with advanced problem-solving.</p>
+              <button className="card-button" onClick={() => navigate('/class/12/jee/chapterList')}>Explore Topics</button>
             </div>
           </div>
         </div>

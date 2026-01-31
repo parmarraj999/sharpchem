@@ -100,7 +100,7 @@ const AcademicsPage = () => {
           <h2 className="section-title">Choose Your Class</h2>
           <div className="class-grid">
             {Object.entries(classData).map(([classNum, data]) => (
-              <div key={classNum} className="class-card">
+              <Link to={`/class/${classNum}`} key={classNum} className="class-card">
                 <div className="card-header">
                   <div className="class-badge">Class {classNum}</div>
                   <div className="chemistry-icon">⚗️</div>
@@ -123,7 +123,7 @@ const AcademicsPage = () => {
                 >
                   View Topics
                 </button>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -6,27 +6,26 @@ import { useNavigate } from "react-router-dom";
 
 const GoogleLoginButton = () => {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const googleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-
+      navigate("/student-details");
       console.log("User Details:", user);
-      window.localStorage.setItem("userId",user.uid);
+      window.localStorage.setItem("userId", user.uid);
       await setDoc(doc(db, "users", user.uid), {
         name: user.displayName,
         email: user.email,
-        photo: user.photoURL,
         createdAt: new Date()
       })
-      .then(()=>{
-        navigate("/");
-      })
-      .catch(()=>{
-        alert("Something went wrong, Try again later!")
-      })
+        .then(() => {
+          navigate("/");
+        })
+        .catch(() => {
+          alert("Something went wrong, Try again later!")
+        })
 
     } catch (error) {
       console.error("Google Login Error:", error);
@@ -43,14 +42,14 @@ const GoogleLoginButton = () => {
         color: "#000",
         border: "1px solid grey",
         fontSize: "16px",
-        display:'flex',
-        alignItems:'center',
-        gap:'10px',
-        justifyContent:'center',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        justifyContent: 'center',
         cursor: "pointer"
       }}
     >
-    <img src="https://i.pinimg.com/736x/45/20/dd/4520ddfc56208707045c56232e946f7f.jpg" style={{width:'30px',height:'30px'}} />
+      <img src="https://i.pinimg.com/736x/45/20/dd/4520ddfc56208707045c56232e946f7f.jpg" style={{ width: '30px', height: '30px' }} />
       Google
     </button>
   );
