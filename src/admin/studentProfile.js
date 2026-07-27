@@ -101,9 +101,9 @@ const StudentProfile = () => {
         </div>
         <nav className="sidebar-nav">
           <Link to="/" className="nav-item active"><LayoutDashboard size={20} /> Dashboard</Link>
-          <Link to="/academic" className="nav-item"><BookOpen size={20} /> My Courses</Link>
-          <Link to="#" className="nav-item"><Target size={20} /> Practice</Link>
+          {/* <Link to="/academic" className="nav-item"><BookOpen size={20} /> My Courses</Link> */}
           <Link to="#" className="nav-item"><Star size={20} /> Quizzes</Link>
+          <Link to="#" className="nav-item"><Target size={20} /> Topics Covered</Link>
           <div className="nav-divider"></div>
           <Link to="#" className="nav-item"><Settings size={20} /> Settings</Link>
           <button onClick={handleLogout} className="nav-item logout-btn"><LogOut size={20} /> Logout</button>

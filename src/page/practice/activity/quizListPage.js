@@ -1,39 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock, HelpCircle, ChevronRight } from 'lucide-react';
 import './quizListPage.css';
+import { db } from '../../../firebase/firebase.config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const QuizListPage = () => {
     const { id, examType, chapterId, topicId } = useParams();
     const navigate = useNavigate();
+    const [quizzes, setQuizzes] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Dummy quizzes data
-    const quizzes = [
-        {
-            id: '1',
-            title: "Physics Fundamentals Quiz",
-            questions: 10,
-            duration: "15 mins",
-            difficulty: "Easy",
-            attempts: 1240
-        },
-        {
-            id: '2',
-            title: "Advanced Mechanics Quiz",
-            questions: 15,
-            duration: "25 mins",
-            difficulty: "Medium",
-            attempts: 856
-        },
-        {
-            id: '3',
-            title: "Final Assessment",
-            questions: 20,
-            duration: "40 mins",
-            difficulty: "Hard",
-            attempts: 423
+    useEffect(() => {
+        const fetchQuizzes = async () => {
+            setLoading(true);
+            try {
+                const classId = `${id}_${examType.toLowerCase()}`;
+                const quizzesRef = collection(db, 'quizzes');
+                const q = query(
+                    quizzesRef, 
+                    where('classId', '==', classId),
+                    where('chapterId', '==', chapterId),
+                    where('topicId', '==', topicId)
+                );
+                const querySnapshot = await getDocs(q);
+                
+                const quizzesData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setQuizzes(quizzesData);
+            } catch (error) {
+                console.error("Error fetching quizzes:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id && examType && chapterId && topicId) {
+            fetchQuizzes();
         }
-    ];
+    }, [id, examType, chapterId, topicId]);
 
     const handleBack = () => {
         navigate(-1);
@@ -46,55 +53,65 @@ const QuizListPage = () => {
     return (
         <div className="quiz-list-page">
             <div className="quiz-list-container">
-                {/* Floating Back Button */}
                 <button className="back-button" onClick={handleBack} aria-label="Go back">
                     <ArrowLeft size={24} />
                 </button>
 
-                {/* Header Section */}
                 <div className="header-section">
                     <div className="header-icon">
                         <BookOpen size={40} />
                     </div>
                     <div className="header-text">
                         <h1 className="page-title">Available Quizzes</h1>
-                        <p className="page-subtitle">Class {id} • {examType.toUpperCase()} • Topic {topicId}</p>
+                        <p className="page-subtitle">Class {id} • {examType.toUpperCase()} • {quizzes.length} Quizzes Found</p>
                     </div>
                 </div>
 
-                <div className="quiz-grid">
-                    {quizzes.map((quiz) => (
-                        <div key={quiz.id} className="quiz-card" onClick={() => handleStartQuiz(quiz.id)}>
-                            <div className="quiz-card-content">
-                                <div className="quiz-info-main">
-                                    <h2 className="quiz-name">{quiz.title}</h2>
-                                    <div className="quiz-tags">
-                                        <span className={`difficulty-tag ${quiz.difficulty.toLowerCase()}`}>
-                                            {quiz.difficulty}
-                                        </span>
+                {loading ? (
+                    <div className="loading-container">
+                        <p>Loading quizzes...</p>
+                    </div>
+                ) : quizzes.length > 0 ? (
+                    <div className="quiz-grid">
+                        {quizzes.map((quiz) => (
+                            <div key={quiz.id} className="quiz-card" onClick={() => handleStartQuiz(quiz.id)}>
+                                <div className="quiz-card-content">
+                                    <div className="quiz-info-main">
+                                        <h2 className="quiz-name">{quiz.title}</h2>
+                                        <div className="quiz-tags">
+                                            {quiz.examType && (
+                                                <span className="difficulty-tag easy">
+                                                    {quiz.examType}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="quiz-meta-grid">
+                                        <div className="meta-item">
+                                            <HelpCircle size={16} />
+                                            <span>Assessment</span>
+                                        </div>
+                                        <div className="meta-item">
+                                            <Clock size={16} />
+                                            <span>{quiz.duration} mins</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="quiz-meta-grid">
-                                    <div className="meta-item">
-                                        <HelpCircle size={16} />
-                                        <span>{quiz.questions} Questions</span>
-                                    </div>
-                                    <div className="meta-item">
-                                        <Clock size={16} />
-                                        <span>{quiz.duration}</span>
-                                    </div>
+                                <div className="quiz-card-footer">
+                                    <span className="attempts-text">Ready to test your knowledge?</span>
+                                    <button className="start-quiz-btn">
+                                        Start Quiz
+                                        <ChevronRight size={18} />
+                                    </button>
                                 </div>
                             </div>
-                            <div className="quiz-card-footer">
-                                <span className="attempts-text">{quiz.attempts} students attempted</span>
-                                <button className="start-quiz-btn">
-                                    Start Quiz
-                                    <ChevronRight size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="no-quizzes">
+                        <p>No quizzes available for this topic yet.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

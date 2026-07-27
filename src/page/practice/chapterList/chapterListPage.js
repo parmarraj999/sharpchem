@@ -1,118 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './chapterListPage.css';
+import { db } from '../../../firebase/firebase.config';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 const ChapterListPage = () => {
     const { id, examType } = useParams();
     const navigate = useNavigate();
+    const [chapters, setChapters] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Dummy chapter data
-    const chapters = {
-        '11': {
-            jee: [
-                {
-                    id: 1,
-                    name: 'Sets, Relations and Functions',
-                    description: 'Introduction to set theory, types of relations, and various functions including domain and range.'
-                },
-                {
-                    id: 2,
-                    name: 'Complex Numbers',
-                    description: 'Understanding complex numbers, their operations, properties, and geometric representation.'
-                },
-                {
-                    id: 3,
-                    name: 'Quadratic Equations',
-                    description: 'Solving quadratic equations, nature of roots, and applications in real-world problems.'
-                },
-                {
-                    id: 4,
-                    name: 'Sequences and Series',
-                    description: 'Arithmetic and geometric progressions, harmonic progression, and special series.'
-                },
-                {
-                    id: 5,
-                    name: 'Permutations and Combinations',
-                    description: 'Fundamental principles of counting, permutations, combinations, and their applications.'
-                },
-                {
-                    id: 6,
-                    name: 'Binomial Theorem',
-                    description: 'Binomial expansion for positive integral index, general and middle terms.'
-                }
-            ],
-            neet: [
-                {
-                    id: 1,
-                    name: 'The Living World',
-                    description: 'Introduction to biology, characteristics of living organisms, and taxonomic categories.'
-                },
-                {
-                    id: 2,
-                    name: 'Biological Classification',
-                    description: 'Five kingdom classification system, hierarchy of classification, and nomenclature.'
-                },
-                {
-                    id: 3,
-                    name: 'Plant Kingdom',
-                    description: 'Classification of plants, algae, bryophytes, pteridophytes, gymnosperms, and angiosperms.'
-                },
-                {
-                    id: 4,
-                    name: 'Animal Kingdom',
-                    description: 'Basis of animal classification, different phyla, and their characteristics.'
-                },
-                {
-                    id: 5,
-                    name: 'Morphology of Flowering Plants',
-                    description: 'Root, stem, leaf, inflorescence, flower, fruit, and seed structure and modifications.'
-                }
-            ]
-        },
-        '12': {
-            jee: [
-                {
-                    id: 1,
-                    name: 'Relations and Functions',
-                    description: 'Types of relations, types of functions, composition of functions, and inverse functions.'
-                },
-                {
-                    id: 2,
-                    name: 'Inverse Trigonometric Functions',
-                    description: 'Definition, domain, range, and properties of inverse trigonometric functions.'
-                },
-                {
-                    id: 3,
-                    name: 'Matrices',
-                    description: 'Types of matrices, matrix operations, transpose, symmetric and skew-symmetric matrices.'
-                },
-                {
-                    id: 4,
-                    name: 'Determinants',
-                    description: 'Properties of determinants, minors, cofactors, and applications in solving equations.'
-                }
-            ],
-            neet: [
-                {
-                    id: 1,
-                    name: 'Reproduction in Organisms',
-                    description: 'Modes of reproduction, asexual and sexual reproduction in plants and animals.'
-                },
-                {
-                    id: 2,
-                    name: 'Sexual Reproduction in Flowering Plants',
-                    description: 'Flower structure, pollination, fertilization, and seed development.'
-                },
-                {
-                    id: 3,
-                    name: 'Human Reproduction',
-                    description: 'Male and female reproductive systems, menstrual cycle, and fertilization.'
-                }
-            ]
+    useEffect(() => {
+        const fetchChapters = async () => {
+            setLoading(true);
+            try {
+                // Construct classId as per schema: 11_jee, 12_neet, etc.
+                const classId = `${id}_${examType.toLowerCase()}`;
+                const chaptersRef = collection(db, 'class_data', classId, 'chapters');
+                const q = query(chaptersRef, orderBy('order', 'asc'));
+                const querySnapshot = await getDocs(q);
+                
+                const chaptersData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setChapters(chaptersData);
+            } catch (error) {
+                console.error("Error fetching competitive chapters:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id && examType) {
+            fetchChapters();
         }
-    };
-
-    const currentChapters = chapters[id]?.[examType.toLowerCase()] || [];
+    }, [id, examType]);
 
     const handleViewTopics = (chapterId) => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topics`);
@@ -133,9 +56,13 @@ const ChapterListPage = () => {
                 </h1>
             </div>
 
-            {currentChapters.length > 0 ? (
+            {loading ? (
+                <div className="loading-container">
+                    <p>Loading chapters...</p>
+                </div>
+            ) : chapters.length > 0 ? (
                 <div className="chapters-grid">
-                    {currentChapters.map((chapter) => (
+                    {chapters.map((chapter) => (
                         <div key={chapter.id} className="chapter-card">
                             <div className="chapter-content">
                                 <h2 className="chapter-name">{chapter.name}</h2>

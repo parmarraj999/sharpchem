@@ -1,76 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import "./topicPage.css"
 import { useNavigate, useParams } from 'react-router-dom';
+import { db } from '../../../firebase/firebase.config';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 const TopicListPage = () => {
-    const params = useParams();
-    const [urlParams] = useState({
-        id: params.id || '11',
-        examType: params.examType || 'jee',
-        chapterId: params.chapterId || '1'
-    });
-
-    // Dummy topic data
-    const topics = [
-        {
-            id: 1,
-            title: "Introduction to Mechanics",
-            description: "Understand the fundamental concepts of motion, force, and energy in classical mechanics."
-        },
-        {
-            id: 2,
-            title: "Newton's Laws of Motion",
-            description: "Explore the three laws that form the foundation of classical mechanics and their real-world applications."
-        },
-        {
-            id: 3,
-            title: "Work, Energy and Power",
-            description: "Learn about different forms of energy, work-energy theorem, and power calculations."
-        },
-        {
-            id: 4,
-            title: "Friction and its Applications",
-            description: "Study static and kinetic friction, their causes, and how they affect motion in everyday scenarios."
-        },
-        {
-            id: 5,
-            title: "Circular Motion",
-            description: "Understand centripetal force, angular velocity, and the physics behind rotational movement."
-        },
-        {
-            id: 6,
-            title: "Gravitation",
-            description: "Explore universal law of gravitation, gravitational potential energy, and orbital mechanics."
-        }
-    ];
-
+    const { id, examType, chapterId } = useParams();
     const navigate = useNavigate();
+    const [topics, setTopics] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTopics = async () => {
+            setLoading(true);
+            try {
+                const classId = `${id}_${examType.toLowerCase()}`;
+                const topicsRef = collection(db, 'class_data', classId, 'chapters', chapterId, 'topics');
+                const q = query(topicsRef, orderBy('order', 'asc'));
+                const querySnapshot = await getDocs(q);
+                
+                const topicsData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setTopics(topicsData);
+            } catch (error) {
+                console.error("Error fetching topics:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id && examType && chapterId) {
+            fetchTopics();
+        }
+    }, [id, examType, chapterId]);
 
     const handleStartQuestions = (topicId) => {
-        navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/questions`);
+        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/questions`);
     };
+
     const handleStartQuize = (topicId) => {
-        navigate(`/class/${urlParams.id}/${urlParams.examType}/chapter/${urlParams.chapterId}/topic/${topicId}/quizzes`);
+        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`);
+    };
+
+    const handleStartNotes = (topic) => {
+        // Check for PDF/Link noteUrl first (added in Admin)
+        if (topic.noteUrl) {
+            window.open(topic.noteUrl, '_blank');
+            return;
+        }
+
+        // Fallback to markdown notes
+        if (topic.notes && (topic.notes.startsWith('http') || topic.notes.startsWith('www'))) {
+            window.open(topic.notes, '_blank');
+        } else {
+            alert("Notes: " + (topic.notes || "No notes available."));
+        }
     };
 
     const handleBack = () => {
-        alert('Going back to previous page');
-        // In real app: navigate(-1);
+        navigate(-1);
     };
 
-    // Format the page title
-    const pageTitle = `Class ${urlParams.id} – ${urlParams.examType.toUpperCase()} – Physics Chapter ${urlParams.chapterId} Topics`;
+    const pageTitle = `Class ${id} – ${examType.toUpperCase()} – Chapter Topics`;
 
     return (
         <>
             <div className="topic-list-container">
-                {/* Floating Back Button */}
                 <button className="back-button" onClick={handleBack} aria-label="Go back">
                     <ArrowLeft size={24} />
                 </button>
 
-                {/* Header Section */}
                 <div className="header-section">
                     <div className="header-icon">
                         <BookOpen size={40} />
@@ -78,29 +80,47 @@ const TopicListPage = () => {
                     <h1 className="page-title">{pageTitle}</h1>
                 </div>
 
-                {/* Topics Grid */}
-                <div className="topics-grid">
-                    {topics.map((topic) => (
-                        <div key={topic.id} className="topic-card">
-                            <h2 className="topic-title">{topic.title}</h2>
-                            <p className="topic-description">{topic.description}</p>
-                            <button
-                                className="start-button"
-                                onClick={() => handleStartQuestions(topic.id)}
-                            >
-                                Start Questions
-                                <span className="button-arrow">→</span>
-                            </button>
-                            <button
-                                className="quize-button"
-                                onClick={() => handleStartQuize(topic.id)}
-                            >
-                                Quizes
-                                <span className="button-arrow">→</span>
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="loading-container">
+                        <p>Loading topics...</p>
+                    </div>
+                ) : topics.length > 0 ? (
+                    <div className="topics-grid">
+                        {topics.map((topic) => (
+                            <div key={topic.id} className="topic-card">
+                                <h2 className="topic-title">{topic.name}</h2>
+                                <p className="topic-description">{topic.description || "Explore this topic for practice and assessment."}</p>
+                                <div className="button-group">
+                                    <button
+                                        className="start-button"
+                                        onClick={() => handleStartQuestions(topic.id)}
+                                    >
+                                        Practice Questions
+                                        <span className="button-arrow">→</span>
+                                    </button>
+                                    <button
+                                        className="quize-button"
+                                        onClick={() => handleStartQuize(topic.id)}
+                                    >
+                                        Take Quiz
+                                        <span className="button-arrow">→</span>
+                                    </button>
+                                    <button
+                                        className="notes-button"
+                                        onClick={() => handleStartNotes(topic)}
+                                    >
+                                        Notes
+                                        <span className="button-arrow">→</span>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="no-topics">
+                        <p>No topics found for this chapter.</p>
+                    </div>
+                )}
             </div>
         </>
     );

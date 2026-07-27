@@ -116,13 +116,13 @@ const HomePage = () => {
               <div className="card-icon">11</div>
               <h3>Class 11</h3>
               <p>Dive deep into organic, inorganic, and physical chemistry essentials.</p>
-              <button className="card-button" onClick={() => handleClassClick('11')}>Explore Topics</button>
+              <button className="card-button" onClick={() => navigate('/class/11')}>Explore Topics</button>
             </div>
             <div className="academic-card">
               <div className="card-icon">12</div>
               <h3>Class 12</h3>
               <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => handleClassClick('12')}>Explore Topics</button>
+              <button className="card-button" onClick={() => navigate('/class/12')}>Explore Topics</button>
             </div>
             <div className="academic-card">
               <div className="card-icon">11</div>
