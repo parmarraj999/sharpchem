@@ -17,7 +17,8 @@ const QuestionsPage = () => {
       setLoading(true);
       try {
         const classId = `${id}_${examType.toLowerCase()}`;
-        const questionsRef = collection(db, 'curriculum', classId, 'chapters', chapterId, 'topics', topicId, 'questions');
+        // Canonical syllabus tree: class_data (legacy curriculum retired for practice questions)
+        const questionsRef = collection(db, 'class_data', classId, 'chapters', chapterId, 'topics', topicId, 'questions');
         const querySnapshot = await getDocs(questionsRef);
         
         const questionsData = querySnapshot.docs.map(doc => ({

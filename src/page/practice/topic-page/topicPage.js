@@ -45,19 +45,8 @@ const TopicListPage = () => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`);
     };
 
-    const handleStartNotes = (topic) => {
-        // Check for PDF/Link noteUrl first (added in Admin)
-        if (topic.noteUrl) {
-            window.open(topic.noteUrl, '_blank');
-            return;
-        }
-
-        // Fallback to markdown notes
-        if (topic.notes && (topic.notes.startsWith('http') || topic.notes.startsWith('www'))) {
-            window.open(topic.notes, '_blank');
-        } else {
-            alert("Notes: " + (topic.notes || "No notes available."));
-        }
+    const handleStartNotes = (topicId) => {
+        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/notes`);
     };
 
     const handleBack = () => {
@@ -107,7 +96,7 @@ const TopicListPage = () => {
                                     </button>
                                     <button
                                         className="notes-button"
-                                        onClick={() => handleStartNotes(topic)}
+                                        onClick={() => handleStartNotes(topic.id)}
                                     >
                                         Notes
                                         <span className="button-arrow">→</span>

@@ -11,6 +11,7 @@ import QuizPage from './page/practice/activity/quizPage';
 import QuestionsPage from './page/practice/activity/questionsPage';
 import ChapterListPage from './page/practice/chapterList/chapterListPage';
 import TopicListPage from './page/practice/topic-page/topicPage';
+import TopicNotesPage from './page/practice/topic-page/topicNotesPage';
 import QuizListPage from './page/practice/activity/quizListPage';
 import ScrollToTop from './function/scrollToTop';
 import StudentProfile from './admin/studentProfile';
@@ -53,6 +54,8 @@ function App() {
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes' element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId' element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions' element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
+            <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/notes' element={<ProtectedRoute><TopicNotesPage /></ProtectedRoute>} />
+            <Route path='/class/:classId/chapter/:chapterId' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
             <Route path='/chapter/:id' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>

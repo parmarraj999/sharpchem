@@ -91,7 +91,7 @@ const ClassDetail = () => {
   }, [classesToFetch]);
 
   const handleLearnNow = (chapter, classId) => {
-    navigate(`/chapter/${chapter.id}`, { state: { chapter, classId } });
+    navigate(`/class/${classId}/chapter/${chapter.id}`, { state: { chapter, classId } });
   };
 
   const pageTitle = classesToFetch.length === 1
