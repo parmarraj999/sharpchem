@@ -97,13 +97,13 @@ const HomePage = () => {
               <div className="practice-icon">📝</div>
               <h3>Practice Papers</h3>
               <p>Curated problem sets designed to strengthen your concepts and improve problem-solving speed for competitive exams.</p>
-              <button className="card-button">View Papers</button>
+              <button className="card-button" onClick={() => navigate('/practice')}>View Papers</button>
             </div>
             <div className="practice-card">
               <div className="practice-icon">🎯</div>
               <h3>PYQs & Online Tests</h3>
               <p>Previous year questions from JEE and NEET with timed tests to simulate real exam conditions and track progress.</p>
-              <button className="card-button">Start Testing</button>
+              <button className="card-button" onClick={() => navigate('/practice')}>Start Testing</button>
             </div>
           </div>
         </div>

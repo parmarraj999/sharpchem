@@ -4,6 +4,7 @@ import './questionsPage.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/firebase.config';
 import { collection, getDocs } from 'firebase/firestore';
+import { resolvePracticeClassId, practiceTrackLabel } from '../../../utils/practiceRoutes';
 
 const QuestionsPage = () => {
   const { id, examType, chapterId, topicId } = useParams();
@@ -12,12 +13,13 @@ const QuestionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [expandedSolutions, setExpandedSolutions] = useState({});
 
+  const classId = resolvePracticeClassId(id, examType);
+
   useEffect(() => {
     const fetchQuestions = async () => {
+      if (!classId || !chapterId || !topicId) return;
       setLoading(true);
       try {
-        const classId = `${id}_${examType.toLowerCase()}`;
-        // Canonical syllabus tree: class_data (legacy curriculum retired for practice questions)
         const questionsRef = collection(db, 'class_data', classId, 'chapters', chapterId, 'topics', topicId, 'questions');
         const querySnapshot = await getDocs(questionsRef);
         
@@ -33,10 +35,8 @@ const QuestionsPage = () => {
       }
     };
 
-    if (id && examType && chapterId && topicId) {
-      fetchQuestions();
-    }
-  }, [id, examType, chapterId, topicId]);
+    fetchQuestions();
+  }, [classId, chapterId, topicId]);
 
   const toggleSolution = (questionId) => {
     setExpandedSolutions(prev => ({
@@ -49,7 +49,7 @@ const QuestionsPage = () => {
     navigate(-1);
   };
 
-  const pageTitle = `Class ${id} – ${examType?.toUpperCase()} – Practice Questions`;
+  const pageTitle = `${practiceTrackLabel(id, examType)} – Practice Questions`;
 
   if (loading) return <div className="loading-container"><p>Loading questions...</p></div>;
 

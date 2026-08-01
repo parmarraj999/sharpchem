@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen, Clock, HelpCircle, ChevronRight } from 'lucide-rea
 import './quizListPage.css';
 import { db } from '../../../firebase/firebase.config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { resolvePracticeClassId } from '../../../utils/practiceRoutes';
 
 const QuizListPage = () => {
     const { id, examType, chapterId, topicId } = useParams();
@@ -11,11 +12,13 @@ const QuizListPage = () => {
     const [quizzes, setQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const classId = resolvePracticeClassId(id, examType);
+
     useEffect(() => {
         const fetchQuizzes = async () => {
+            if (!classId || !chapterId || !topicId) return;
             setLoading(true);
             try {
-                const classId = `${id}_${examType.toLowerCase()}`;
                 const quizzesRef = collection(db, 'quizzes');
                 const q = query(
                     quizzesRef, 
@@ -37,10 +40,8 @@ const QuizListPage = () => {
             }
         };
 
-        if (id && examType && chapterId && topicId) {
-            fetchQuizzes();
-        }
-    }, [id, examType, chapterId, topicId]);
+        fetchQuizzes();
+    }, [classId, chapterId, topicId]);
 
     const handleBack = () => {
         navigate(-1);

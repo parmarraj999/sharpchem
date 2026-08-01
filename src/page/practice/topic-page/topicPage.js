@@ -4,6 +4,7 @@ import "./topicPage.css"
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/firebase.config';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { resolvePracticeClassId, practiceTrackLabel } from '../../../utils/practiceRoutes';
 
 const TopicListPage = () => {
     const { id, examType, chapterId } = useParams();
@@ -11,11 +12,13 @@ const TopicListPage = () => {
     const [topics, setTopics] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const classId = resolvePracticeClassId(id, examType);
+
     useEffect(() => {
         const fetchTopics = async () => {
+            if (!classId || !chapterId) return;
             setLoading(true);
             try {
-                const classId = `${id}_${examType.toLowerCase()}`;
                 const topicsRef = collection(db, 'class_data', classId, 'chapters', chapterId, 'topics');
                 const q = query(topicsRef, orderBy('order', 'asc'));
                 const querySnapshot = await getDocs(q);
@@ -32,10 +35,8 @@ const TopicListPage = () => {
             }
         };
 
-        if (id && examType && chapterId) {
-            fetchTopics();
-        }
-    }, [id, examType, chapterId]);
+        fetchTopics();
+    }, [classId, chapterId]);
 
     const handleStartQuestions = (topicId) => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/questions`);
@@ -45,15 +46,11 @@ const TopicListPage = () => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`);
     };
 
-    const handleStartNotes = (topicId) => {
-        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/notes`);
-    };
-
     const handleBack = () => {
         navigate(-1);
     };
 
-    const pageTitle = `Class ${id} – ${examType.toUpperCase()} – Chapter Topics`;
+    const pageTitle = `${practiceTrackLabel(id, examType)} – Chapter Topics`;
 
     return (
         <>
@@ -67,6 +64,7 @@ const TopicListPage = () => {
                         <BookOpen size={40} />
                     </div>
                     <h1 className="page-title">{pageTitle}</h1>
+                    <p className="page-subtitle">Practice questions and quizzes for this chapter. Lessons and notes are under Academics.</p>
                 </div>
 
                 {loading ? (
@@ -92,13 +90,6 @@ const TopicListPage = () => {
                                         onClick={() => handleStartQuiz(topic.id)}
                                     >
                                         Take Quiz
-                                        <span className="button-arrow">→</span>
-                                    </button>
-                                    <button
-                                        className="notes-button"
-                                        onClick={() => handleStartNotes(topic.id)}
-                                    >
-                                        Notes
                                         <span className="button-arrow">→</span>
                                     </button>
                                 </div>

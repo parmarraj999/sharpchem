@@ -17,15 +17,6 @@ const PlaceholderPage = ({ title, description, ctaLabel = 'Back to Home', ctaTo 
   );
 };
 
-export const PracticePage = () => (
-  <PlaceholderPage
-    title="Practice"
-    description="Dedicated practice papers and timed drills will live here. For now, start from Academics or your class chapter lists."
-    ctaLabel="Go to Academics"
-    ctaTo="/academic"
-  />
-);
-
 export const BlogPage = () => (
   <PlaceholderPage
     title="Blog"

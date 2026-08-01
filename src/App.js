@@ -11,14 +11,14 @@ import QuizPage from './page/practice/activity/quizPage';
 import QuestionsPage from './page/practice/activity/questionsPage';
 import ChapterListPage from './page/practice/chapterList/chapterListPage';
 import TopicListPage from './page/practice/topic-page/topicPage';
-import TopicNotesPage from './page/practice/topic-page/topicNotesPage';
 import QuizListPage from './page/practice/activity/quizListPage';
 import ScrollToTop from './function/scrollToTop';
 import StudentProfile from './admin/studentProfile';
 import StudentDetailsForm from './page/details/studentDetails';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import { PracticePage, BlogPage, AboutPage, ContactPage } from './page/placeholder/PlaceholderPage';
+import { BlogPage, AboutPage, ContactPage } from './page/placeholder/PlaceholderPage';
+import PracticeHub from './page/practice/PracticeHub';
 
 /** Legacy class-level /quizzes URL had no quizId — send users to chapter list instead. */
 const RedirectToChapterList = () => {
@@ -43,7 +43,7 @@ function App() {
             <Route path='/profile/:id' element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
             <Route path='/student-detail' element={<ProtectedRoute><StudentDetailsForm /></ProtectedRoute>} />
             <Route path='/academic' element={<ProtectedRoute><AcademicsPage /></ProtectedRoute>} />
-            <Route path='/practice' element={<ProtectedRoute><PracticePage /></ProtectedRoute>} />
+            <Route path='/practice' element={<ProtectedRoute><PracticeHub /></ProtectedRoute>} />
             <Route path='/blog' element={<ProtectedRoute><BlogPage /></ProtectedRoute>} />
             <Route path='/about' element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
             <Route path='/contact' element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
@@ -54,7 +54,6 @@ function App() {
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes' element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId' element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions' element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
-            <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/notes' element={<ProtectedRoute><TopicNotesPage /></ProtectedRoute>} />
             <Route path='/class/:classId/chapter/:chapterId' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
             <Route path='/chapter/:id' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
           </Routes>

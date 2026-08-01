@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Download } from 'lucide-react';
-import './chapterDetail.css'
+import { ArrowLeft, Download, Target } from 'lucide-react';
+import './chapterDetail.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { db } from '../../firebase/firebase.config';
 import { doc, getDoc } from 'firebase/firestore';
+import { practiceTopicsPathFromFirestore } from '../../utils/practiceRoutes';
 
 const ChapterDetailPage = () => {
   const { classId: paramClassId, chapterId: paramChapterId, id: legacyId } = useParams();
@@ -30,7 +31,6 @@ const ChapterDetailPage = () => {
         return;
       }
 
-      // Prefer fresh fetch so shared URLs always work; use state only as optional seed
       setLoading(true);
       try {
         const chapterRef = doc(db, 'class_data', classId, 'chapters', chapterId);
@@ -56,7 +56,6 @@ const ChapterDetailPage = () => {
 
   const handleBackClick = () => {
     if (classId) {
-      // Standard tracks use /class/9 style URLs; Firestore ids are class_9
       const studentClassPath = classId.startsWith('class_')
         ? classId.replace('class_', '')
         : classId;
@@ -70,6 +69,11 @@ const ChapterDetailPage = () => {
     if (chapter?.noteUrl) {
       window.open(chapter.noteUrl, '_blank');
     }
+  };
+
+  const handlePracticeChapter = () => {
+    const path = practiceTopicsPathFromFirestore(classId, chapterId);
+    if (path) navigate(path);
   };
 
   if (loading) return <div className="loading-container"><p>Loading chapter details...</p></div>;
@@ -98,11 +102,13 @@ const ChapterDetailPage = () => {
     return `https://www.youtube.com/embed/${videoId}`;
   };
 
+  const practicePath = practiceTopicsPathFromFirestore(classId, chapterId);
+
   return (
     <div className="chapter-detail-page">
       <div className="chapter-container">
         <header className="header">
-          <button className="back-button" onClick={handleBackClick}>
+          <button type="button" className="back-button" onClick={handleBackClick}>
             <ArrowLeft size={24} />
           </button>
           <h1 className="header-title">{chapter.name}</h1>
@@ -116,21 +122,46 @@ const ChapterDetailPage = () => {
             </p>
           </section>
 
-          {chapter.noteUrl && (
-            <section className="section">
-              <h2 className="section-title">Notes</h2>
-              <div className="notes-container">
-                <div className="notes-info">
-                  <p className="notes-text">Chapter notes are available for download</p>
-                  <p className="notes-subtext">Click the button to view or download the PDF/Image notes.</p>
+          {practicePath && (
+            <section className="section practice-cta-section">
+              <h2 className="section-title">Practice this chapter</h2>
+              <div className="practice-cta-box">
+                <div className="practice-cta-copy">
+                  <p className="notes-text">Ready to test yourself?</p>
+                  <p className="notes-subtext">
+                    Open topics for practice questions and quizzes. Lessons and notes stay on this page.
+                  </p>
                 </div>
-                <button className="download-button" onClick={handleDownloadNotes}>
-                  <Download size={20} />
-                  Download Notes
+                <button type="button" className="practice-chapter-button" onClick={handlePracticeChapter}>
+                  <Target size={20} />
+                  Practice this chapter
                 </button>
               </div>
             </section>
           )}
+
+          <section className="section">
+            <h2 className="section-title">Notes</h2>
+            {chapter.noteUrl ? (
+              <div className="notes-container">
+                <div className="notes-info">
+                  <p className="notes-text">Chapter notes are available</p>
+                  <p className="notes-subtext">Open or download the PDF / image for this chapter.</p>
+                </div>
+                <button type="button" className="download-button" onClick={handleDownloadNotes}>
+                  <Download size={20} />
+                  Open Notes
+                </button>
+              </div>
+            ) : (
+              <div className="notes-container notes-container--empty">
+                <div className="notes-info">
+                  <p className="notes-text">No notes uploaded yet</p>
+                  <p className="notes-subtext">When notes are added in admin for this chapter, they will appear here.</p>
+                </div>
+              </div>
+            )}
+          </section>
 
           {chapter.videoUrl && (
             <section className="section">

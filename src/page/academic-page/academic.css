@@ -316,6 +316,14 @@
   gap: 1rem;
 }
 
+.topics-loading {
+  margin: 0;
+  padding: 1.5rem 0;
+  text-align: center;
+  color: #64748b;
+  font-weight: 500;
+}
+
 .topic-item {
   display: flex;
   align-items: center;
