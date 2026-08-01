@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import "./topicPage.css"
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/firebase.config';
@@ -53,19 +53,18 @@ const TopicListPage = () => {
     const pageTitle = `${practiceTrackLabel(id, examType)} – Chapter Topics`;
 
     return (
-        <>
-            <div className="topic-list-container">
-                <button className="back-button" onClick={handleBack} aria-label="Go back">
-                    <ArrowLeft size={24} />
+        <div className="topic-list-container">
+            <header className="topic-page-header">
+                <button type="button" className="topic-back-button" onClick={handleBack} aria-label="Go back">
+                    <ArrowLeft size={22} />
                 </button>
-
-                <div className="header-section">
-                    <div className="header-icon">
-                        <BookOpen size={40} />
-                    </div>
+                <div className="topic-page-header-text">
                     <h1 className="page-title">{pageTitle}</h1>
-                    <p className="page-subtitle">Practice questions and quizzes for this chapter. Lessons and notes are under Academics.</p>
+                    <p className="page-subtitle">
+                        Practice questions and quizzes for this chapter. Lessons and notes are under Academics.
+                    </p>
                 </div>
+            </header>
 
                 {loading ? (
                     <div className="loading-container">
@@ -101,8 +100,7 @@ const TopicListPage = () => {
                         <p>No topics found for this chapter.</p>
                     </div>
                 )}
-            </div>
-        </>
+        </div>
     );
 };
 

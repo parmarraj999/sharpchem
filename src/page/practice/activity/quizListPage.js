@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Clock, HelpCircle, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, HelpCircle, ChevronRight } from 'lucide-react';
 import './quizListPage.css';
 import { db } from '../../../firebase/firebase.config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -54,19 +54,15 @@ const QuizListPage = () => {
     return (
         <div className="quiz-list-page">
             <div className="quiz-list-container">
-                <button className="back-button" onClick={handleBack} aria-label="Go back">
-                    <ArrowLeft size={24} />
-                </button>
-
-                <div className="header-section">
-                    <div className="header-icon">
-                        <BookOpen size={40} />
-                    </div>
+                <header className="quiz-list-header">
+                    <button type="button" className="quiz-list-back" onClick={handleBack} aria-label="Go back">
+                        <ArrowLeft size={22} />
+                    </button>
                     <div className="header-text">
                         <h1 className="page-title">Available Quizzes</h1>
                         <p className="page-subtitle">Class {id} • {examType.toUpperCase()} • {quizzes.length} Quizzes Found</p>
                     </div>
-                </div>
+                </header>
 
                 {loading ? (
                     <div className="loading-container">

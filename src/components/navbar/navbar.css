@@ -33,16 +33,19 @@
   align-items: center;
 }
 
-.nav-links a {
+.nav-links a,
+.nav-links .nav-link {
   text-decoration: none;
   color: #333;
   font-weight: 500;
   font-size: 0.95rem;
   position: relative;
   transition: color 0.3s ease;
+  padding: 6px 2px;
 }
 
-.nav-links a::after {
+.nav-links a::after,
+.nav-links .nav-link::after {
   content: '';
   position: absolute;
   bottom: -5px;
@@ -53,12 +56,28 @@
   transition: width 0.3s ease;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links .nav-link:hover {
   color: #1e88e5;
 }
 
-.nav-links a:hover::after {
+.nav-links a:hover::after,
+.nav-links .nav-link:hover::after {
   width: 100%;
+}
+
+/* Persistent active tab */
+.nav-links a.active,
+.nav-links .nav-link.active {
+  color: #1e88e5;
+  font-weight: 700;
+}
+
+.nav-links a.active::after,
+.nav-links .nav-link.active::after {
+  width: 100%;
+  background: #1e88e5;
+  height: 2.5px;
 }
 
 .auth-button {
@@ -113,8 +132,20 @@
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   }
 
-  .nav-links.active {
+  .nav-links.menu-open {
     left: 0;
+  }
+
+  .nav-links a.active,
+  .nav-links .nav-link.active {
+    background: #e3f2fd;
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+
+  .nav-links a.active::after,
+  .nav-links .nav-link.active::after {
+    display: none;
   }
 
   .mobile-menu-toggle {
