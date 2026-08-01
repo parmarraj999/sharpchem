@@ -41,7 +41,7 @@ const TopicListPage = () => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/questions`);
     };
 
-    const handleStartQuize = (topicId) => {
+    const handleStartQuiz = (topicId) => {
         navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`);
     };
 
@@ -99,8 +99,8 @@ const TopicListPage = () => {
                                         <span className="button-arrow">→</span>
                                     </button>
                                     <button
-                                        className="quize-button"
-                                        onClick={() => handleStartQuize(topic.id)}
+                                        className="quiz-button"
+                                        onClick={() => handleStartQuiz(topic.id)}
                                     >
                                         Take Quiz
                                         <span className="button-arrow">→</span>

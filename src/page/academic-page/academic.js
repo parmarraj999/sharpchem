@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import './academic.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AcademicsPage = () => {
   const [selectedClass, setSelectedClass] = useState(null);
+  const navigate = useNavigate();
 
   const classData = {
     9: {
@@ -70,12 +71,6 @@ const AcademicsPage = () => {
     }
   };
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-    const toggleMobileMenu = () => {
-      setMobileMenuOpen(!mobileMenuOpen);
-    };
-
   return (
     <div className="academics-page">
       {/* Navbar */}
@@ -117,9 +112,12 @@ const AcademicsPage = () => {
                     Interactive
                   </span>
                 </div>
-                <button 
+                  <button 
                   className="view-topics-btn"
-                  onClick={() => setSelectedClass(classNum)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedClass(classNum);
+                  }}
                 >
                   View Topics
                 </button>
@@ -141,7 +139,16 @@ const AcademicsPage = () => {
                 <div key={index} className="topic-item">
                   <span className="topic-number">{index + 1}</span>
                   <span className="topic-name">{topic}</span>
-                  <button className="topic-btn">Start Learning →</button>
+                  <button
+                    className="topic-btn"
+                    onClick={() => {
+                      const classNum = selectedClass;
+                      setSelectedClass(null);
+                      navigate(`/class/${classNum}`);
+                    }}
+                  >
+                    Start Learning →
+                  </button>
                 </div>
               ))}
             </div>
@@ -212,10 +219,10 @@ const AcademicsPage = () => {
           <div className="footer-section">
             <h4>Connect</h4>
             <div className="social-links">
-              <a href="#" className="social-icon">📘</a>
-              <a href="#" className="social-icon">📷</a>
-              <a href="#" className="social-icon">🐦</a>
-              <a href="#" className="social-icon">📧</a>
+              <Link to="/contact" className="social-icon" aria-label="Facebook">📘</Link>
+              <Link to="/contact" className="social-icon" aria-label="Instagram">📷</Link>
+              <Link to="/contact" className="social-icon" aria-label="Twitter">🐦</Link>
+              <Link to="/contact" className="social-icon" aria-label="Email">📧</Link>
             </div>
           </div>
         </div>

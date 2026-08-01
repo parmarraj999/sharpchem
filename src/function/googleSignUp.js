@@ -12,20 +12,13 @@ const GoogleLoginButton = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      navigate("/student-details");
-      console.log("User Details:", user);
       window.localStorage.setItem("userId", user.uid);
       await setDoc(doc(db, "users", user.uid), {
         name: user.displayName,
         email: user.email,
         createdAt: new Date()
-      })
-        .then(() => {
-          navigate("/");
-        })
-        .catch(() => {
-          alert("Something went wrong, Try again later!")
-        })
+      }, { merge: true });
+      navigate("/student-detail");
 
     } catch (error) {
       console.error("Google Login Error:", error);
@@ -49,7 +42,12 @@ const GoogleLoginButton = () => {
         cursor: "pointer"
       }}
     >
-      <img src="https://i.pinimg.com/736x/45/20/dd/4520ddfc56208707045c56232e946f7f.jpg" style={{ width: '30px', height: '30px' }} />
+      <img
+        src="https://i.pinimg.com/736x/45/20/dd/4520ddfc56208707045c56232e946f7f.jpg"
+        alt="Sign in with Google"
+        width={30}
+        height={30}
+      />
       Google
     </button>
   );

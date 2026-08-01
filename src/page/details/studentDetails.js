@@ -34,10 +34,6 @@ export default function StudentDetailsForm() {
     alert("Form submitted!");
   };
 
-  const handleCancel = () => {
-    setFormData({ currentClass: "", goal: "", mobile: "", state: "" });
-  };
-
   return (
     <div className="sd-container">
       <div className="sd-wrapper">
@@ -142,7 +138,7 @@ export default function StudentDetailsForm() {
 
         {/* Buttons */}
         <div className="sd-actions">
-          <button type="button" className="sd-btn-cancel" onClick={()=>navigate(-1)}>
+          <button type="button" className="sd-btn-cancel" onClick={() => navigate(-1)}>
             Back
           </button>
 

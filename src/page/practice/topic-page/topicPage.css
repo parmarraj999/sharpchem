@@ -155,7 +155,7 @@
     gap: 0.5rem;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
-.quize-button {
+.quiz-button {
     width: 100%;
     padding: 0.9rem 1.5rem;
     background: #764ba2;
@@ -189,7 +189,7 @@
 }
 
 .start-button:hover .button-arrow,
-.quize-button:hover .button-arrow,
+.quiz-button:hover .button-arrow,
 .notes-button:hover .button-arrow {
     transform: translateX(4px);
 }

@@ -1,87 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import { Link, useNavigate } from 'react-router-dom';
-import PopupModal from '../../components/class-popup/classPopUp';
 
 import InitialPopup from '../../components/initial-popup/InitialPopup';
 
 const HomePage = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Show popup on mount
     setShowWelcomePopup(true);
   }, []);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  const navigate = useNavigate();
-
-  const [showExamPopup, setShowExamPopup] = useState(false);
-  const [showTypePopup, setShowTypePopup] = useState(false);
-  const [selectedExam, setSelectedExam] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-
-  const handleClassClick = (classId) => {
-    if (classId === "11" || classId === "12") {
-      setSelectedClass(classId);
-      setShowExamPopup(true);
-    } else {
-      navigate(`/class/${classId}`);
-    }
-  };
-
-  const handleExamSelect = (exam) => {
-    setSelectedExam(exam);
-    setShowExamPopup(false);
-    setShowTypePopup(true);
-  };
-
-  const handleTypeSelect = (type) => {
-    setShowTypePopup(false);
-    // if(type === 'questions'){
-    navigate(`/class/${selectedClass}/${selectedExam}/chapterList`);
-    // }
-    // else{
-    //   navigate(`/class/${selectedClass}/${selectedExam}/${type}`);
-    // }
-  };
-
-
   return (
     <div className="homepage">
-      {/* Welcome Popup */}
       <InitialPopup
         isOpen={showWelcomePopup}
         onClose={() => setShowWelcomePopup(false)}
       />
-
-      {/* Navbar */}
-      <PopupModal
-        isOpen={showExamPopup}
-        title="Select Exam Type"
-        options={[
-          { label: "JEE", value: "jee" },
-          { label: "NEET", value: "neet" },
-        ]}
-        onSelect={handleExamSelect}
-        onClose={() => setShowExamPopup(false)}
-      />
-
-      <PopupModal
-        isOpen={showTypePopup}
-        title="Choose Content Type"
-        options={[
-          { label: "Quizzes", value: "quizzes" },
-          { label: "Chapterwise Questions", value: "questions" },
-        ]}
-        onSelect={handleTypeSelect}
-        onClose={() => setShowTypePopup(false)}
-      />
-
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -89,8 +25,8 @@ const HomePage = () => {
           <h1 className="hero-title">Master Chemistry the Smart Way 🚀</h1>
           <p className="hero-subtitle">Concepts, Practice & Revision — All in one place.</p>
           <div className="hero-buttons">
-            <Link to='/login' className="btn btn-primary">Start Learning</Link>
-            <button className="btn btn-secondary">Take a Free Test</button>
+            <Link to='/academic' className="btn btn-primary">Start Learning</Link>
+            <Link to='/practice' className="btn btn-secondary">Take a Free Test</Link>
           </div>
         </div>
       </section>
@@ -210,13 +146,13 @@ const HomePage = () => {
               <div className="blog-date">Oct 5, 2025</div>
               <h3>5 Tips to Master Organic Chemistry</h3>
               <p>Discover proven strategies to understand and remember organic reactions effectively for JEE and NEET.</p>
-              <a href="#" className="blog-link">Read More →</a>
+              <Link to="/blog" className="blog-link">Read More →</Link>
             </div>
             <div className="blog-card">
               <div className="blog-date">Oct 1, 2025</div>
               <h3>How to Approach Physical Chemistry Numericals</h3>
               <p>Learn systematic methods to solve thermodynamics, equilibrium, and kinetics problems quickly.</p>
-              <a href="#" className="blog-link">Read More →</a>
+              <Link to="/blog" className="blog-link">Read More →</Link>
             </div>
           </div>
         </div>
@@ -227,15 +163,15 @@ const HomePage = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-links">
-              <a href="#about">About</a>
-              <a href="#help">Help</a>
-              <a href="#faqs">FAQs</a>
-              <a href="#contact">Contact</a>
+              <Link to="/about">About</Link>
+              <Link to="/contact">Help</Link>
+              <Link to="/about">FAQs</Link>
+              <Link to="/contact">Contact</Link>
             </div>
             <div className="footer-social">
-              <a href="#" className="social-link">Twitter</a>
-              <a href="#" className="social-link">Instagram</a>
-              <a href="#" className="social-link">YouTube</a>
+              <Link to="/contact" className="social-link">Twitter</Link>
+              <Link to="/contact" className="social-link">Instagram</Link>
+              <Link to="/contact" className="social-link">YouTube</Link>
             </div>
           </div>
           <div className="footer-copyright">

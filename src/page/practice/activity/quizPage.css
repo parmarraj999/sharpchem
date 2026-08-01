@@ -27,7 +27,7 @@
      margin-bottom: 1rem;
  }
 
- .quize-back-button {
+ .quiz-back-button {
      background: #667eea;
      border: none;
      width: 40px;
@@ -41,7 +41,7 @@
      transition: all 0.3s ease;
  }
 
- .back-button:hover {
+ .quiz-back-button:hover {
      background: #764ba2;
      transform: scale(1.05);
  }

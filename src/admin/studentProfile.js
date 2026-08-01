@@ -7,12 +7,8 @@ import {
   Clock,
   TrendingUp,
   FileText,
-  Lock,
   Edit,
-  Download,
-  Award,
   Zap,
-  Calendar,
   Mail,
   Phone,
   ChevronRight,
@@ -25,7 +21,7 @@ import {
   Bell
 } from 'lucide-react';
 import './studentProfile.css';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase.config';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
@@ -35,7 +31,6 @@ const StudentProfile = () => {
   const [userData, setUserData] = useState(null);
   const [greeting, setGreeting] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams();
 
   useEffect(() => {
     const hours = new Date().getHours();

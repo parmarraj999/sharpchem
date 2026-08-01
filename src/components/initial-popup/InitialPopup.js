@@ -7,13 +7,10 @@ const InitialPopup = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    const handleNavigation = (classId, examType, type) => {
+    const handleNavigation = (classId, examType) => {
         onClose();
-        if (type === 'quizzes') {
-            navigate(`/class/${classId}/${examType}/quizzes`);
-        } else {
-            navigate(`/class/${classId}/${examType}/chapterList`);
-        }
+        // Quizzes and Practice both start at chapter list; student then picks topic → quizzes/questions
+        navigate(`/class/${classId}/${examType}/chapterList`);
     };
 
     const categories = [
@@ -37,13 +34,13 @@ const InitialPopup = ({ isOpen, onClose }) => {
                             <div className="card-actions">
                                 <button
                                     className="action-btn quiz-btn"
-                                    onClick={() => handleNavigation(cat.classId, cat.examType, 'quizzes')}
+                                    onClick={() => handleNavigation(cat.classId, cat.examType)}
                                 >
                                     Quizzes
                                 </button>
                                 <button
                                     className="action-btn practice-btn"
-                                    onClick={() => handleNavigation(cat.classId, cat.examType, 'practice')}
+                                    onClick={() => handleNavigation(cat.classId, cat.examType)}
                                 >
                                     Practice
                                 </button>

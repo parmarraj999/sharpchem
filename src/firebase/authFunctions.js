@@ -1,7 +1,6 @@
 // authFunctions.js
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase.config";
-import { useNavigate } from "react-router-dom";
 
 export const emailPasswordSignup = async (email, password) => {
   try {

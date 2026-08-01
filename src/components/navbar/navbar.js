@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import './navbar.css'
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -22,14 +22,12 @@ function Navbar() {
         <Link to='/' className="logo">SharpChem.in</Link>
 
         <nav className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
-          <Link to='/' onClick={() => setMobileMenuOpen(false)} href="#home">Home</Link>
-          <Link to='/academic' href="#academics" onClick={() => setMobileMenuOpen(false)}>Academics</Link>
-          {/* <a href="#tests">PYQs & Tests</a> */}
-          <Link to='/practice' href="#practice" onClick={() => setMobileMenuOpen(false)}>Practice</Link>
-          {/* <a href="#mechanisms">Mechanisms</a> */}
-          <Link to='/blog' href="#blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
-          <Link to='/about' href="#about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-          <Link to='/contact' href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+          <Link to='/' onClick={() => setMobileMenuOpen(false)}>Home</Link>
+          <Link to='/academic' onClick={() => setMobileMenuOpen(false)}>Academics</Link>
+          <Link to='/practice' onClick={() => setMobileMenuOpen(false)}>Practice</Link>
+          <Link to='/blog' onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+          <Link to='/about' onClick={() => setMobileMenuOpen(false)}>About</Link>
+          <Link to='/contact' onClick={() => setMobileMenuOpen(false)}>Contact</Link>
         </nav>
         {
           currentUser ?
@@ -40,7 +38,11 @@ function Navbar() {
                 <span></span>
               </button>
               <Link to={`/profile/${currentUser.uid}`} style={{ width: '45px', height: '45px', borderRadius: '50%' }}>
-                <img src={currentUser.photoURL || 'https://i.pinimg.com/1200x/38/6c/52/386c5283f14bdca0fa14e28dd18fb574.jpg'} style={{ borderRadius: '50%', width: '100%', height: "100%" }} />
+                <img
+                  src={currentUser.photoURL || 'https://i.pinimg.com/1200x/38/6c/52/386c5283f14bdca0fa14e28dd18fb574.jpg'}
+                  alt="Profile"
+                  style={{ borderRadius: '50%', width: '100%', height: "100%" }}
+                />
               </Link>
             </div>
             :

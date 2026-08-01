@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './login.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import GoogleLoginButton from '../../function/googleSignUp';
 import { ChevronLeft } from 'lucide-react';
 import { emailPasswordLogin } from '../../firebase/authFunctions';
@@ -16,6 +16,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,7 +67,7 @@ const Login = () => {
       setMessage("Login successful!");
       window.localStorage.setItem('userId',response.user.uid)
       window.localStorage.setItem('isLogIn',true) 
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate(redirectTo, { replace: true }), 1000);
     } else {
       let errorMsg = response.error;
 
@@ -97,11 +99,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const isLogIn = window.localStorage.getItem('isLogIn');
-    if (isLogIn) {
-      navigate('/');
+    if (window.localStorage.getItem('isLogIn')) {
+      navigate(redirectTo, { replace: true });
     }
-  }, []);
+  }, [navigate, redirectTo]);
 
   return (
     <div className="login-container">

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, CheckCircle, XCircle, Award } from 'lucide-react';
-import './quizePage.css'
+import { ArrowLeft, Clock, CheckCircle, Award } from 'lucide-react';
+import './quizPage.css'
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/firebase.config';
 import { doc, getDoc, collection, query, orderBy, getDocs } from 'firebase/firestore';
 
-const QuizePage = () => {
-  const { id, examType, chapterId, topicId, quizId } = useParams();
+const QuizPage = () => {
+  const { examType, quizId } = useParams();
   const navigate = useNavigate();
   
   const [quizMetadata, setQuizMetadata] = useState(null);
@@ -122,7 +122,7 @@ const QuizePage = () => {
     <div className="quiz-container">
       <div className="quiz-header">
         <div className="header-top">
-          <button className="quize-back-button" onClick={handleBack}>
+          <button className="quiz-back-button" onClick={handleBack}>
             <ArrowLeft size={20} />
           </button>
           <h1 className="quiz-title">{pageTitle}</h1>
@@ -236,4 +236,4 @@ const QuizePage = () => {
   );
 };
 
-export default QuizePage;
+export default QuizPage;
