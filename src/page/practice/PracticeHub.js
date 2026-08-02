@@ -33,7 +33,7 @@ const PracticeHub = () => {
           <h1 className="ph-title">Practice</h1>
           <p className="ph-subtitle">
             Pick a track, choose a chapter and topic, then work through practice questions or timed quizzes.
-            Lessons and chapter notes stay under Academics.
+            Lessons (video &amp; notes) live under Academics → chapter → topic.
           </p>
         </header>
 

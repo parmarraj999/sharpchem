@@ -6,6 +6,7 @@ import Navbar from './components/navbar/navbar';
 import Login from './page/auth/login';
 import Signup from './page/auth/signup';
 import ChapterDetailPage from './page/chapter-detail/chapterDetail';
+import TopicLessonPage from './page/chapter-detail/topicLesson';
 import ClassDetail from './page/chapter-page/classPage';
 import QuizPage from './page/practice/activity/quizPage';
 import QuestionsPage from './page/practice/activity/questionsPage';
@@ -54,6 +55,7 @@ function App() {
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes' element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId' element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
             <Route path='/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions' element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
+            <Route path='/class/:classId/chapter/:chapterId/learn/:topicId' element={<ProtectedRoute><TopicLessonPage /></ProtectedRoute>} />
             <Route path='/class/:classId/chapter/:chapterId' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
             <Route path='/chapter/:id' element={<ProtectedRoute><ChapterDetailPage /></ProtectedRoute>} />
           </Routes>

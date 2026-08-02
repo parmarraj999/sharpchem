@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Download, Target } from 'lucide-react';
+import { ArrowLeft, Target, BookOpen, Video, FileText, ChevronRight } from 'lucide-react';
 import './chapterDetail.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { db } from '../../firebase/firebase.config';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import { practiceTopicsPathFromFirestore } from '../../utils/practiceRoutes';
 
 const ChapterDetailPage = () => {
@@ -19,15 +19,17 @@ const ChapterDetailPage = () => {
       ? location.state.chapter
       : null
   );
-  const [loading, setLoading] = useState(!chapter);
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
-    const fetchChapter = async () => {
+    const fetchChapterAndTopics = async () => {
       if (!classId || !chapterId) {
         setLoading(false);
         setChapter(null);
+        setTopics([]);
         return;
       }
 
@@ -35,22 +37,36 @@ const ChapterDetailPage = () => {
       try {
         const chapterRef = doc(db, 'class_data', classId, 'chapters', chapterId);
         const docSnap = await getDoc(chapterRef);
+
+        let chapterData = null;
+        if (docSnap.exists()) {
+          chapterData = { id: docSnap.id, ...docSnap.data() };
+        }
+
+        const topicsSnap = await getDocs(
+          query(
+            collection(db, 'class_data', classId, 'chapters', chapterId, 'topics'),
+            orderBy('order', 'asc')
+          )
+        );
+        const topicsData = topicsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
         if (!cancelled) {
-          if (docSnap.exists()) {
-            setChapter({ id: docSnap.id, ...docSnap.data() });
-          } else {
-            setChapter(null);
-          }
+          setChapter(chapterData);
+          setTopics(topicsData);
         }
       } catch (error) {
         console.error('Error fetching chapter detail:', error);
-        if (!cancelled) setChapter(null);
+        if (!cancelled) {
+          setChapter(null);
+          setTopics([]);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
-    fetchChapter();
+    fetchChapterAndTopics();
     return () => { cancelled = true; };
   }, [classId, chapterId]);
 
@@ -65,10 +81,10 @@ const ChapterDetailPage = () => {
     navigate(-1);
   };
 
-  const handleDownloadNotes = () => {
-    if (chapter?.noteUrl) {
-      window.open(chapter.noteUrl, '_blank');
-    }
+  const handleOpenTopic = (topic) => {
+    navigate(`/class/${classId}/chapter/${chapterId}/learn/${topic.id}`, {
+      state: { topic, chapter, classId },
+    });
   };
 
   const handlePracticeChapter = () => {
@@ -76,7 +92,13 @@ const ChapterDetailPage = () => {
     if (path) navigate(path);
   };
 
-  if (loading) return <div className="loading-container"><p>Loading chapter details...</p></div>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <p>Loading chapter details...</p>
+      </div>
+    );
+  }
   if (!classId || !chapterId) {
     return (
       <div className="error-container">
@@ -87,20 +109,13 @@ const ChapterDetailPage = () => {
       </div>
     );
   }
-  if (!chapter) return <div className="error-container"><p>Chapter not found.</p></div>;
-
-  const getEmbedUrl = (url) => {
-    if (!url) return '';
-    let videoId = '';
-    if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1];
-    } else if (url.includes('v=')) {
-      videoId = url.split('v=')[1].split('&')[0];
-    } else if (url.includes('embed/')) {
-      videoId = url.split('embed/')[1];
-    }
-    return `https://www.youtube.com/embed/${videoId}`;
-  };
+  if (!chapter) {
+    return (
+      <div className="error-container">
+        <p>Chapter not found.</p>
+      </div>
+    );
+  }
 
   const practicePath = practiceTopicsPathFromFirestore(classId, chapterId);
 
@@ -122,6 +137,59 @@ const ChapterDetailPage = () => {
             </p>
           </section>
 
+          <section className="section">
+            <h2 className="section-title">Topics</h2>
+            <p className="topics-intro">
+              Open a topic for its video lesson and notes. Practice questions stay under Practice.
+            </p>
+
+            {topics.length === 0 ? (
+              <div className="notes-container notes-container--empty">
+                <div className="notes-info">
+                  <p className="notes-text">No topics yet</p>
+                  <p className="notes-subtext">Topics added in admin for this chapter will appear here.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="chapter-topics-list">
+                {topics.map((topic, index) => (
+                  <button
+                    key={topic.id}
+                    type="button"
+                    className="chapter-topic-row"
+                    onClick={() => handleOpenTopic(topic)}
+                  >
+                    <span className="chapter-topic-index">{index + 1}</span>
+                    <span className="chapter-topic-body">
+                      <span className="chapter-topic-name">{topic.name}</span>
+                      {topic.description && (
+                        <span className="chapter-topic-desc">{topic.description}</span>
+                      )}
+                      <span className="chapter-topic-meta">
+                        {topic.videoUrl && (
+                          <span className="chapter-topic-tag">
+                            <Video size={14} /> Video
+                          </span>
+                        )}
+                        {topic.noteUrl && (
+                          <span className="chapter-topic-tag">
+                            <FileText size={14} /> Notes
+                          </span>
+                        )}
+                        {!topic.videoUrl && !topic.noteUrl && (
+                          <span className="chapter-topic-tag chapter-topic-tag--muted">
+                            <BookOpen size={14} /> Lesson
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                    <ChevronRight size={20} className="chapter-topic-chevron" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+
           {practicePath && (
             <section className="section practice-cta-section">
               <h2 className="section-title">Practice this chapter</h2>
@@ -129,50 +197,13 @@ const ChapterDetailPage = () => {
                 <div className="practice-cta-copy">
                   <p className="notes-text">Ready to test yourself?</p>
                   <p className="notes-subtext">
-                    Open topics for practice questions and quizzes. Lessons and notes stay on this page.
+                    Drill practice questions and quizzes for topics in this chapter.
                   </p>
                 </div>
                 <button type="button" className="practice-chapter-button" onClick={handlePracticeChapter}>
                   <Target size={20} />
                   Practice this chapter
                 </button>
-              </div>
-            </section>
-          )}
-
-          <section className="section">
-            <h2 className="section-title">Notes</h2>
-            {chapter.noteUrl ? (
-              <div className="notes-container">
-                <div className="notes-info">
-                  <p className="notes-text">Chapter notes are available</p>
-                  <p className="notes-subtext">Open or download the PDF / image for this chapter.</p>
-                </div>
-                <button type="button" className="download-button" onClick={handleDownloadNotes}>
-                  <Download size={20} />
-                  Open Notes
-                </button>
-              </div>
-            ) : (
-              <div className="notes-container notes-container--empty">
-                <div className="notes-info">
-                  <p className="notes-text">No notes uploaded yet</p>
-                  <p className="notes-subtext">When notes are added in admin for this chapter, they will appear here.</p>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {chapter.videoUrl && (
-            <section className="section">
-              <h2 className="section-title">Video Lesson</h2>
-              <div className="video-container">
-                <iframe
-                  src={getEmbedUrl(chapter.videoUrl)}
-                  title={chapter.name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
               </div>
             </section>
           )}
