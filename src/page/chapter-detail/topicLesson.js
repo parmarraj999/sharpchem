@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Download, Target, FileText } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase.config';
-import { practiceTopicsPathFromFirestore } from '../../utils/practiceRoutes';
+import {
+  resolvePracticeClassId,
+  practiceTopicsPathFromFirestore,
+  academicsChapterPath,
+  parseFirestoreClassId,
+} from '../../utils/practiceRoutes';
 import './topicLesson.css';
 
 const isProbablyPdf = (url) => /\.pdf(\?|#|$)/i.test(url) || /application%2Fpdf/i.test(url);
@@ -25,9 +30,14 @@ const getEmbedUrl = (url) => {
 };
 
 const TopicLessonPage = () => {
-  const { classId, chapterId, topicId } = useParams();
+  const { id, examType, chapterId, topicId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const firestoreClassId = useMemo(
+    () => resolvePracticeClassId(id, examType) || location.state?.classId || null,
+    [id, examType, location.state?.classId]
+  );
 
   const [topic, setTopic] = useState(
     location.state?.topic && location.state.topic.id === topicId
@@ -40,7 +50,7 @@ const TopicLessonPage = () => {
     let cancelled = false;
 
     const fetchTopic = async () => {
-      if (!classId || !chapterId || !topicId) {
+      if (!firestoreClassId || !chapterId || !topicId) {
         setLoading(false);
         setTopic(null);
         return;
@@ -48,7 +58,15 @@ const TopicLessonPage = () => {
 
       setLoading(true);
       try {
-        const topicRef = doc(db, 'class_data', classId, 'chapters', chapterId, 'topics', topicId);
+        const topicRef = doc(
+          db,
+          'class_data',
+          firestoreClassId,
+          'chapters',
+          chapterId,
+          'topics',
+          topicId
+        );
         const snap = await getDoc(topicRef);
         if (!cancelled) {
           setTopic(snap.exists() ? { id: snap.id, ...snap.data() } : null);
@@ -63,16 +81,23 @@ const TopicLessonPage = () => {
 
     fetchTopic();
     return () => { cancelled = true; };
-  }, [classId, chapterId, topicId]);
+  }, [firestoreClassId, chapterId, topicId]);
 
   const handleBack = () => {
-    navigate(`/class/${classId}/chapter/${chapterId}`);
+    const track =
+      id && examType
+        ? { id, examType }
+        : parseFirestoreClassId(firestoreClassId);
+    if (track) {
+      navigate(academicsChapterPath(track.id, track.examType, chapterId));
+      return;
+    }
+    navigate('/academic');
   };
 
   const handlePractice = () => {
-    const chapterPractice = practiceTopicsPathFromFirestore(classId, chapterId);
+    const chapterPractice = practiceTopicsPathFromFirestore(firestoreClassId, chapterId);
     if (!chapterPractice) return;
-    // Jump into practice topic actions for this topic
     const base = chapterPractice.replace(/\/topics$/, '');
     navigate(`${base}/topic/${topicId}/questions`);
   };

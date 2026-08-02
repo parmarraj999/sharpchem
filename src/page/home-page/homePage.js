@@ -17,7 +17,7 @@ const TrackCard = ({ track, navigate }) => (
       <button
         type="button"
         className="card-button card-button--primary"
-        onClick={() => navigate(academicsClassPath(track.firestoreId))}
+        onClick={() => navigate(academicsClassPath(track))}
       >
         Explore Chapters
       </button>

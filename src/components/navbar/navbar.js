@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import './navbar.css';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { isPracticeClassPath, isAcademicsClassPath } from '../../utils/practiceRoutes';
 
-/** Practice routes: /practice or /class/:id/(standard|jee|neet)/... */
+/** Practice routes: /practice or drill paths under /class/:id/:examType/... */
 const isPracticePath = (pathname) =>
   pathname === '/practice' ||
   pathname.startsWith('/practice/') ||
-  /^\/class\/[^/]+\/(standard|jee|neet)(\/|$)/i.test(pathname);
+  isPracticeClassPath(pathname);
 
-/** Academics: hub, class lists, chapter lessons (not practice drills) */
+/** Academics: hub + learn paths (not practice drills) */
 const isAcademicsPath = (pathname) => {
   if (pathname === '/academic' || pathname.startsWith('/academic/')) return true;
   if (isPracticePath(pathname)) return false;
-  if (pathname.startsWith('/class/')) return true;
+  if (isAcademicsClassPath(pathname)) return true;
   if (pathname.startsWith('/chapter/')) return true;
   return false;
 };

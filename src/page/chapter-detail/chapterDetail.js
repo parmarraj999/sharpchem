@@ -1,21 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Target, BookOpen, Video, FileText, ChevronRight } from 'lucide-react';
 import './chapterDetail.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { db } from '../../firebase/firebase.config';
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
-import { practiceTopicsPathFromFirestore } from '../../utils/practiceRoutes';
+import {
+  resolvePracticeClassId,
+  practiceTopicsPathFromFirestore,
+  academicsClassPath,
+  academicsLessonPath,
+  parseFirestoreClassId,
+} from '../../utils/practiceRoutes';
 
 const ChapterDetailPage = () => {
-  const { classId: paramClassId, chapterId: paramChapterId, id: legacyId } = useParams();
+  const params = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const classId = paramClassId || location.state?.classId;
-  const chapterId = paramChapterId || legacyId;
+  // /class/:id/:examType/chapter/:chapterId  OR legacy /chapter/:id
+  const routeId = params.id;
+  const examType = params.examType;
+  const paramChapterId = params.chapterId;
+  const effectiveChapterId = paramChapterId || (!examType ? routeId : null);
+
+  const firestoreClassId = useMemo(() => {
+    if (routeId && examType) return resolvePracticeClassId(routeId, examType);
+    return location.state?.classId || null;
+  }, [routeId, examType, location.state?.classId]);
 
   const [chapter, setChapter] = useState(
-    location.state?.chapter && location.state.chapter.id === chapterId
+    location.state?.chapter && location.state.chapter.id === effectiveChapterId
       ? location.state.chapter
       : null
   );
@@ -26,7 +40,7 @@ const ChapterDetailPage = () => {
     let cancelled = false;
 
     const fetchChapterAndTopics = async () => {
-      if (!classId || !chapterId) {
+      if (!firestoreClassId || !effectiveChapterId) {
         setLoading(false);
         setChapter(null);
         setTopics([]);
@@ -35,7 +49,7 @@ const ChapterDetailPage = () => {
 
       setLoading(true);
       try {
-        const chapterRef = doc(db, 'class_data', classId, 'chapters', chapterId);
+        const chapterRef = doc(db, 'class_data', firestoreClassId, 'chapters', effectiveChapterId);
         const docSnap = await getDoc(chapterRef);
 
         let chapterData = null;
@@ -45,7 +59,7 @@ const ChapterDetailPage = () => {
 
         const topicsSnap = await getDocs(
           query(
-            collection(db, 'class_data', classId, 'chapters', chapterId, 'topics'),
+            collection(db, 'class_data', firestoreClassId, 'chapters', effectiveChapterId, 'topics'),
             orderBy('order', 'asc')
           )
         );
@@ -68,27 +82,38 @@ const ChapterDetailPage = () => {
 
     fetchChapterAndTopics();
     return () => { cancelled = true; };
-  }, [classId, chapterId]);
+  }, [firestoreClassId, effectiveChapterId]);
 
   const handleBackClick = () => {
-    if (classId) {
-      const studentClassPath = classId.startsWith('class_')
-        ? classId.replace('class_', '')
-        : classId;
-      navigate(`/class/${studentClassPath}`);
+    if (routeId && examType) {
+      navigate(academicsClassPath({ id: routeId, examType }));
       return;
     }
-    navigate(-1);
+    if (firestoreClassId) {
+      navigate(academicsClassPath(firestoreClassId));
+      return;
+    }
+    navigate('/academic');
   };
 
   const handleOpenTopic = (topic) => {
-    navigate(`/class/${classId}/chapter/${chapterId}/learn/${topic.id}`, {
-      state: { topic, chapter, classId },
+    const track =
+      routeId && examType
+        ? { id: routeId, examType }
+        : parseFirestoreClassId(firestoreClassId);
+
+    if (!track) {
+      navigate('/academic');
+      return;
+    }
+
+    navigate(academicsLessonPath(track.id, track.examType, effectiveChapterId, topic.id), {
+      state: { topic, chapter, classId: firestoreClassId },
     });
   };
 
   const handlePracticeChapter = () => {
-    const path = practiceTopicsPathFromFirestore(classId, chapterId);
+    const path = practiceTopicsPathFromFirestore(firestoreClassId, effectiveChapterId);
     if (path) navigate(path);
   };
 
@@ -99,7 +124,7 @@ const ChapterDetailPage = () => {
       </div>
     );
   }
-  if (!classId || !chapterId) {
+  if (!firestoreClassId || !effectiveChapterId) {
     return (
       <div className="error-container">
         <p>Missing class or chapter in the URL.</p>
@@ -117,7 +142,7 @@ const ChapterDetailPage = () => {
     );
   }
 
-  const practicePath = practiceTopicsPathFromFirestore(classId, chapterId);
+  const practicePath = practiceTopicsPathFromFirestore(firestoreClassId, effectiveChapterId);
 
   return (
     <div className="chapter-detail-page">

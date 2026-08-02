@@ -23,7 +23,7 @@ const AcademicsPage = () => {
   const navigate = useNavigate();
 
   const openTrack = (track) => {
-    navigate(academicsClassPath(track.firestoreId));
+    navigate(academicsClassPath(track));
   };
 
   return (
