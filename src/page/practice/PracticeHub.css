@@ -1,6 +1,107 @@
-.practice-hub {
+.practice-page {
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
   min-height: calc(100vh - 70px);
-  padding: 2.5rem 1.25rem 4rem;
+  background: #f8fafc;
+}
+
+.hub-banner {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-banner--compact {
+  height: auto;
+  padding: 1.75rem 1.25rem 1.5rem;
+}
+
+.hub-banner::before,
+.hub-banner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hub-banner::before {
+  top: -40%;
+  right: -5%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(30, 136, 229, 0.12) 0%, transparent 70%);
+}
+
+.hub-banner::after {
+  bottom: -45%;
+  left: -5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(30, 136, 229, 0.1) 0%, transparent 70%);
+}
+
+.hub-banner-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.hub-banner-eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1565c0;
+}
+
+.hub-banner-title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #1e88e5;
+  line-height: 1.2;
+}
+
+.hub-banner-subtitle {
+  margin: 0 0 0.85rem;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: #555;
+  font-weight: 400;
+}
+
+.hub-banner-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 1.5rem;
+}
+
+.hub-banner-icon {
+  display: inline-block;
+  animation: hub-icon-bounce 2s ease-in-out infinite;
+}
+
+.hub-banner-icon:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.hub-banner-icon:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes hub-icon-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.practice-hub {
+  min-height: auto;
+  padding: 1.75rem 1.25rem 4rem;
   background: linear-gradient(160deg, #f0f7ff 0%, #e8f1fb 45%, #f8fafc 100%);
   font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
@@ -8,6 +109,14 @@
 .practice-hub-inner {
   max-width: 1100px;
   margin: 0 auto;
+}
+
+.practice-hub-lead {
+  margin: 0 0 2rem;
+  max-width: 640px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #64748b;
 }
 
 .ph-hero {
@@ -149,6 +258,10 @@
 @media (max-width: 640px) {
   .practice-hub {
     padding: 1.75rem 1rem 3rem;
+  }
+
+  .hub-banner--compact {
+    padding: 1.35rem 1rem 1.15rem;
   }
 
   .ph-section-head {

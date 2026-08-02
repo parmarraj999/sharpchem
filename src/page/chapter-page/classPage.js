@@ -118,7 +118,7 @@ const ClassDetail = () => {
             </div>
           ) : classesToFetch.length === 0 ? (
             <div className="no-chapters">
-              <p>Unknown class “{id}”. Try Class 9–12 from Academics or Home.</p>
+              <p>Unknown class “{id}”. Open Academics and pick a board or JEE/NEET track.</p>
             </div>
           ) : classDataGrouped.some((g) => g.chapters.length > 0) ? (
             classDataGrouped.map((group) => (

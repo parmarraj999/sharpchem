@@ -26,60 +26,71 @@ const PracticeHub = () => {
   };
 
   return (
-    <div className="practice-hub">
-      <div className="practice-hub-inner">
-        <header className="ph-hero">
-          <p className="ph-eyebrow">Drill mode</p>
-          <h1 className="ph-title">Practice</h1>
-          <p className="ph-subtitle">
+    <div className="practice-page">
+      <section className="hub-banner hub-banner--compact">
+        <div className="hub-banner-content">
+          <p className="hub-banner-eyebrow">Drill mode</p>
+          <h1 className="hub-banner-title">Practice Chemistry, Chapter by Chapter</h1>
+          <p className="hub-banner-subtitle">Questions and quizzes to sharpen board and competitive exam skills.</p>
+          <div className="hub-banner-icons" aria-hidden="true">
+            <span className="hub-banner-icon">📝</span>
+            <span className="hub-banner-icon">🎯</span>
+            <span className="hub-banner-icon">⏱️</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="practice-hub">
+        <div className="practice-hub-inner">
+          <p className="practice-hub-lead">
             Pick a track, choose a chapter and topic, then work through practice questions or timed quizzes.
             Lessons (video &amp; notes) live under Academics → chapter → topic.
           </p>
-        </header>
 
-        <section className="ph-section">
-          <div className="ph-section-head">
-            <div className="ph-section-icon ph-section-icon--board">
-              <BookOpen size={22} />
+          <section className="ph-section">
+            <div className="ph-section-head">
+              <div className="ph-section-icon ph-section-icon--board">
+                <BookOpen size={22} />
+              </div>
+              <div>
+                <h2>Board classes</h2>
+                <p>Class 9–12 standard syllabus practice</p>
+              </div>
             </div>
-            <div>
-              <h2>Board classes</h2>
-              <p>Class 9–12 standard syllabus practice</p>
+            <div className="ph-grid">
+              {PRACTICE_TRACKS.board.map((track) => (
+                <TrackCard
+                  key={track.firestoreId}
+                  track={track}
+                  accent="board"
+                  onOpen={() => openTrack(track)}
+                />
+              ))}
             </div>
-          </div>
-          <div className="ph-grid">
-            {PRACTICE_TRACKS.board.map((track) => (
-              <TrackCard
-                key={track.firestoreId}
-                track={track}
-                accent="board"
-                onOpen={() => openTrack(track)}
-              />
-            ))}
-          </div>
-        </section>
+          </section>
 
-        <section className="ph-section">
-          <div className="ph-section-head">
-            <div className="ph-section-icon ph-section-icon--comp">
-              <Target size={22} />
+          <section className="ph-section">
+            <div className="ph-section-head">
+              <div className="ph-section-icon ph-section-icon--comp">
+                <Target size={22} />
+              </div>
+              <div>
+                <h2>Competitive exams</h2>
+                <p>JEE &amp; NEET chapter drills and quizzes</p>
+              </div>
             </div>
-            <div>
-              <h2>Competitive exams</h2>
-              <p>JEE &amp; NEET chapter drills and quizzes</p>
+            <div className="ph-grid">
+              {PRACTICE_TRACKS.competitive.map((track) => (
+                <TrackCard
+                  key={track.firestoreId}
+                  track={track}
+                  accent="comp"
+                  onOpen={() => openTrack(track)}
+                />
+              ))}
             </div>
-          </div>
-          <div className="ph-grid">
-            {PRACTICE_TRACKS.competitive.map((track) => (
-              <TrackCard
-                key={track.firestoreId}
-                track={track}
-                accent="comp"
-                onOpen={() => openTrack(track)}
-              />
-            ))}
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   );

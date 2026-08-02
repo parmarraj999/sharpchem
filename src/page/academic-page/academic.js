@@ -1,87 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import './academic.css';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '../../firebase/firebase.config';
+import { BookOpen, Target, ChevronRight } from 'lucide-react';
+import {
+  PRACTICE_TRACKS,
+  academicsClassPath,
+} from '../../utils/practiceRoutes';
+import '../practice/PracticeHub.css';
+import './academic.css';
 
-const CLASS_META = {
-  9: {
-    title: 'Class 9 Chemistry',
-    description: 'Learn basic concepts and experiments',
-    firestoreId: 'class_9',
-    color: '#1e88e5',
-  },
-  10: {
-    title: 'Class 10 Chemistry',
-    description: 'Build your chemical reactions foundation',
-    firestoreId: 'class_10',
-    color: '#1976d2',
-  },
-  11: {
-    title: 'Class 11 Chemistry',
-    description: 'Dive into advanced concepts and theories',
-    firestoreId: 'class_11',
-    color: '#1565c0',
-  },
-  12: {
-    title: 'Class 12 Chemistry',
-    description: 'Master Chemistry for competitive exams',
-    firestoreId: 'class_12',
-    color: '#0d47a1',
-  },
-};
+const TrackCard = ({ track, accent, onOpen }) => (
+  <button type="button" className={`ph-card ph-card--${accent}`} onClick={onOpen}>
+    <div className="ph-card-top">
+      <span className="ph-card-badge">{track.label}</span>
+      <ChevronRight size={20} className="ph-card-chevron" />
+    </div>
+    <p className="ph-card-blurb">{track.learnBlurb || track.blurb}</p>
+    <span className="ph-card-cta">View chapters</span>
+  </button>
+);
 
 const AcademicsPage = () => {
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [chaptersByClass, setChaptersByClass] = useState({});
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchChapters = async () => {
-      setLoading(true);
-      try {
-        const entries = await Promise.all(
-          Object.entries(CLASS_META).map(async ([classNum, meta]) => {
-            const chaptersRef = collection(db, 'class_data', meta.firestoreId, 'chapters');
-            const q = query(chaptersRef, orderBy('order', 'asc'));
-            const snap = await getDocs(q);
-            const chapters = snap.docs.map((d) => ({
-              id: d.id,
-              ...d.data(),
-              name: d.data().name || 'Untitled chapter',
-            }));
-            return [classNum, chapters];
-          })
-        );
-
-        if (!cancelled) {
-          setChaptersByClass(Object.fromEntries(entries));
-        }
-      } catch (error) {
-        console.error('Error fetching academics chapters:', error);
-        if (!cancelled) setChaptersByClass({});
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    fetchChapters();
-    return () => { cancelled = true; };
-  }, []);
-
-  const selectedMeta = selectedClass ? CLASS_META[selectedClass] : null;
-  const selectedChapters = selectedClass ? (chaptersByClass[selectedClass] || []) : [];
+  const openTrack = (track) => {
+    navigate(academicsClassPath(track.firestoreId));
+  };
 
   return (
     <div className="academics-page">
-      <section className="hero-banner">
+      <section className="hero-banner hero-banner--compact">
         <div className="hero-content">
+          <p className="hero-eyebrow">Learn mode</p>
           <h1 className="hero-title">Explore Class-wise Chemistry Topics</h1>
           <p className="hero-subtitle">Build your Chemistry foundation step by step.</p>
-          <div className="hero-icons">
+          <div className="hero-icons" aria-hidden="true">
             <span className="hero-icon">🧪</span>
             <span className="hero-icon">⚛️</span>
             <span className="hero-icon">🔬</span>
@@ -89,84 +41,58 @@ const AcademicsPage = () => {
         </div>
       </section>
 
-      <section className="class-grid-section">
-        <div className="container">
-          <h2 className="section-title">Choose Your Class</h2>
-          <div className="class-grid">
-            {Object.entries(CLASS_META).map(([classNum, data]) => {
-              const chapters = chaptersByClass[classNum] || [];
-              return (
-                <Link to={`/class/${classNum}`} key={classNum} className="class-card">
-                  <div className="card-header">
-                    <div className="class-badge">Class {classNum}</div>
-                    <div className="chemistry-icon">⚗️</div>
-                  </div>
-                  <h3 className="card-title">{data.title}</h3>
-                  <p className="card-description">{data.description}</p>
-                  <div className="card-stats">
-                    <span className="stat">
-                      <span className="stat-icon">📚</span>
-                      {loading ? '…' : `${chapters.length} Chapters`}
-                    </span>
-                    <span className="stat">
-                      <span className="stat-icon">✅</span>
-                      Interactive
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="view-topics-btn"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedClass(classNum);
-                    }}
-                  >
-                    View Chapters
-                  </button>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <div className="practice-hub academics-hub">
+        <div className="practice-hub-inner">
+          <p className="academics-hub-lead">
+            Pick a board or competitive track, open a chapter, then study each topic with video and notes.
+            Practice questions and quizzes live under Practice.
+          </p>
 
-      {selectedClass && selectedMeta && (
-        <div className="modal-overlay" onClick={() => setSelectedClass(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button type="button" className="modal-close" onClick={() => setSelectedClass(null)}>×</button>
-            <h2 className="modal-title">{selectedMeta.title}</h2>
-            <p className="modal-subtitle">{selectedMeta.description}</p>
-            <div className="topics-list">
-              {loading ? (
-                <p className="topics-loading">Loading chapters…</p>
-              ) : selectedChapters.length === 0 ? (
-                <p className="topics-loading">No chapters published for this class yet.</p>
-              ) : (
-                selectedChapters.map((chapter, index) => (
-                  <div key={chapter.id} className="topic-item">
-                    <span className="topic-number">{index + 1}</span>
-                    <span className="topic-name">{chapter.name}</span>
-                    <button
-                      type="button"
-                      className="topic-btn"
-                      onClick={() => {
-                        const classNum = selectedClass;
-                        const firestoreId = CLASS_META[classNum].firestoreId;
-                        setSelectedClass(null);
-                        navigate(`/class/${firestoreId}/chapter/${chapter.id}`, {
-                          state: { chapter, classId: firestoreId },
-                        });
-                      }}
-                    >
-                      Start Learning →
-                    </button>
-                  </div>
-                ))
-              )}
+          <section className="ph-section">
+            <div className="ph-section-head">
+              <div className="ph-section-icon ph-section-icon--board">
+                <BookOpen size={22} />
+              </div>
+              <div>
+                <h2>Board classes</h2>
+                <p>Class 9–12 standard syllabus lessons</p>
+              </div>
             </div>
-          </div>
+            <div className="ph-grid">
+              {PRACTICE_TRACKS.board.map((track) => (
+                <TrackCard
+                  key={track.firestoreId}
+                  track={track}
+                  accent="board"
+                  onOpen={() => openTrack(track)}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className="ph-section">
+            <div className="ph-section-head">
+              <div className="ph-section-icon ph-section-icon--comp">
+                <Target size={22} />
+              </div>
+              <div>
+                <h2>Competitive exams</h2>
+                <p>JEE &amp; NEET chapter lessons and notes</p>
+              </div>
+            </div>
+            <div className="ph-grid">
+              {PRACTICE_TRACKS.competitive.map((track) => (
+                <TrackCard
+                  key={track.firestoreId}
+                  track={track}
+                  accent="comp"
+                  onOpen={() => openTrack(track)}
+                />
+              ))}
+            </div>
+          </section>
         </div>
-      )}
+      </div>
 
       <section className="featured-section">
         <div className="container">

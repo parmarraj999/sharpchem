@@ -4,7 +4,21 @@
   min-height: 100vh;
 }
 
-/* Hero Banner */
+.academics-hub.practice-hub {
+  min-height: auto;
+  padding-top: 1.75rem;
+  padding-bottom: 2rem;
+}
+
+.academics-hub-lead {
+  margin: 0 0 2rem;
+  max-width: 640px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+/* Compact hero — same copy, much less vertical space than the old 80vh banner */
 .hero-banner {
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   padding: 5rem 2rem;
@@ -15,6 +29,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.hero-banner--compact {
+  height: auto;
+  min-height: 0;
+  padding: 1.75rem 1.25rem 1.5rem;
+}
+
+.hero-banner--compact .hero-eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1565c0;
+}
+
+.hero-banner--compact .hero-title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  margin-bottom: 0.4rem;
+}
+
+.hero-banner--compact .hero-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  margin-bottom: 0.85rem;
+}
+
+.hero-banner--compact .hero-icons {
+  font-size: 1.5rem;
+  gap: 1.25rem;
+}
+
+.hero-banner--compact::before,
+.hero-banner--compact::after {
+  width: 220px;
+  height: 220px;
 }
 
 .hero-banner::before {
@@ -561,6 +611,10 @@
   
   .hero-banner {
     padding: 3rem 1rem;
+  }
+
+  .hero-banner--compact {
+    padding: 1.35rem 1rem 1.15rem;
   }
   
   .hero-title {

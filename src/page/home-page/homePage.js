@@ -1,8 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import { Link, useNavigate } from 'react-router-dom';
-
 import InitialPopup from '../../components/initial-popup/InitialPopup';
+import {
+  PRACTICE_TRACKS,
+  academicsClassPath,
+  practiceChapterListPath,
+} from '../../utils/practiceRoutes';
+
+const TrackCard = ({ track, navigate }) => (
+  <div className="academic-card">
+    <div className="card-icon">{track.id}</div>
+    <h3>{track.label}</h3>
+    <p>{track.learnBlurb || track.blurb}</p>
+    <div className="card-actions">
+      <button
+        type="button"
+        className="card-button card-button--primary"
+        onClick={() => navigate(academicsClassPath(track.firestoreId))}
+      >
+        Explore Chapters
+      </button>
+      <button
+        type="button"
+        className="card-button card-button--secondary"
+        onClick={() => navigate(practiceChapterListPath(track.id, track.examType))}
+      >
+        Practice
+      </button>
+    </div>
+  </div>
+);
 
 const HomePage = () => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -19,76 +47,40 @@ const HomePage = () => {
         onClose={() => setShowWelcomePopup(false)}
       />
 
-      {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Master Chemistry the Smart Way 🚀</h1>
           <p className="hero-subtitle">Concepts, Practice & Revision — All in one place.</p>
           <div className="hero-buttons">
-            <Link to='/academic' className="btn btn-primary">Start Learning</Link>
-            <Link to='/practice' className="btn btn-secondary">Take a Free Test</Link>
+            <Link to="/academic" className="btn btn-primary">Start Learning</Link>
+            <Link to="/practice" className="btn btn-secondary">Take a Free Test</Link>
           </div>
         </div>
       </section>
 
-      {/* Academics Section */}
       <section className="academics-section" id="academics">
         <div className="container">
           <h2 className="section-title">Learn Class-Wise Chemistry</h2>
+          <p className="section-lead">
+            Explore chapters for lessons (video &amp; notes), or jump straight into practice for that track.
+          </p>
+
+          <h3 className="subsection-title">Board classes</h3>
           <div className="academics-grid">
-            <div className="academic-card">
-              <div className="card-icon">9</div>
-              <h3>Class 9</h3>
-              <p>Build strong foundations with fundamental concepts and basic reactions.</p>
-              <button className="card-button" onClick={() => navigate('/class/9')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">10</div>
-              <h3>Class 10</h3>
-              <p>Master board exam concepts with detailed explanations and practice.</p>
-              <button className="card-button" onClick={() => navigate('/class/10')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">11</div>
-              <h3>Class 11</h3>
-              <p>Dive deep into organic, inorganic, and physical chemistry essentials.</p>
-              <button className="card-button" onClick={() => navigate('/class/11')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">12</div>
-              <h3>Class 12</h3>
-              <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => navigate('/class/12')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">11</div>
-              <h3>Class 11 ( NEET )</h3>
-              <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => navigate('/class/11/neet/chapterList')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">11</div>
-              <h3>Class 11( JEE )</h3>
-              <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => navigate('/class/11/jee/chapterList')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">12</div>
-              <h3>Class 12 ( NEET )</h3>
-              <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => navigate('/class/12/neet/chapterList')}>Explore Topics</button>
-            </div>
-            <div className="academic-card">
-              <div className="card-icon">12</div>
-              <h3>Class 12 ( JEE )</h3>
-              <p>Ace boards and competitive exams with advanced problem-solving.</p>
-              <button className="card-button" onClick={() => navigate('/class/12/jee/chapterList')}>Explore Topics</button>
-            </div>
+            {PRACTICE_TRACKS.board.map((track) => (
+              <TrackCard key={track.firestoreId} track={track} navigate={navigate} />
+            ))}
+          </div>
+
+          <h3 className="subsection-title">Competitive exams</h3>
+          <div className="academics-grid">
+            {PRACTICE_TRACKS.competitive.map((track) => (
+              <TrackCard key={track.firestoreId} track={track} navigate={navigate} />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Practice & Tests Section */}
       <section className="practice-section" id="practice">
         <div className="container">
           <h2 className="section-title">Prepare for JEE | NEET with Real Practice</h2>
@@ -97,19 +89,18 @@ const HomePage = () => {
               <div className="practice-icon">📝</div>
               <h3>Practice Papers</h3>
               <p>Curated problem sets designed to strengthen your concepts and improve problem-solving speed for competitive exams.</p>
-              <button className="card-button" onClick={() => navigate('/practice')}>View Papers</button>
+              <button type="button" className="card-button" onClick={() => navigate('/practice')}>View Papers</button>
             </div>
             <div className="practice-card">
               <div className="practice-icon">🎯</div>
               <h3>PYQs & Online Tests</h3>
               <p>Previous year questions from JEE and NEET with timed tests to simulate real exam conditions and track progress.</p>
-              <button className="card-button" onClick={() => navigate('/practice')}>Start Testing</button>
+              <button type="button" className="card-button" onClick={() => navigate('/practice')}>Start Testing</button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Mechanisms Section */}
       <section className="mechanisms-section" id="mechanisms">
         <div className="container">
           <h2 className="section-title">Understand Reaction Mechanisms Easily</h2>
@@ -134,7 +125,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Blog / Vision Section */}
       <section className="blog-section" id="blog">
         <div className="container">
           <h2 className="section-title">From the Desk of SharpChem</h2>
@@ -158,7 +148,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="footer" id="contact">
         <div className="container">
           <div className="footer-content">
@@ -175,7 +164,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="footer-copyright">
-            <p>Copyright © 2025 SharpChem.in. All rights reserved.</p>
+            <p>Copyright © {new Date().getFullYear()} SharpChem.in. All rights reserved.</p>
           </div>
         </div>
       </footer>
