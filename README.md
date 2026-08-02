@@ -1,31 +1,35 @@
 # 🧪 SharpChem.in — Modern Chemistry Learning Platform
 
-**SharpChem.in** is a modern, responsive web platform built using **React.js** that helps students learn Chemistry through class-wise topics, practice papers, mechanisms, and more — all in one place.
+**SharpChem.in** is the student-facing React app for learning Chemistry — class-wise lessons (video & notes), practice questions, and quizzes — powered by Firebase project `sharpchem-aca68`.
+
+Companion CMS: **sharpchem-admin**.
 
 ---
 
 ## 🚀 Features
 
-* 🎓 **Class-wise Content:** Organized for Classes 9–12
-* 🧾 **Practice Papers & PYQs:** Test your knowledge with real exam-style questions
-* ⚙️ **Mechanisms Section:** Understand organic and inorganic reaction mechanisms
-* ✍️ **Blog Section:** Learn chemistry tips, concepts, and updates
-* 🔐 **Authentication:** Login & Signup pages with clean, responsive UI
-* 📱 **Responsive Design:** Optimized for desktop, tablet, and mobile screens
-* 💙 **Modern UI:** Built with React + CSS3 using a consistent blue academic theme
+* 🎓 **Class-wise content** — Board Classes 9–12 plus competitive **11/12 JEE & NEET**
+* 📘 **Academics (Learn)** — Track → chapters → topics → **video lesson + notes**
+* 🧾 **Practice (Drill)** — Same tracks → chapters → topics → **questions & timed quizzes**
+* 🏠 **Home CTAs** — Per track: **Explore Chapters** (learn) and **Practice** (drill)
+* 🧭 **Smart nav** — Academics vs Practice highlighting by route family
+* 🔐 **Authentication** — Email/password & Google sign-in (Firebase Auth)
+* 📱 **Responsive UI** — Desktop, tablet, and mobile
+* 🔗 **Clean URLs** — `/class/9/standard` (learn) vs `/class/9/standard/chapterList` (practice); Firestore ids stay `class_9`, `11_jee`, etc.
 
 ---
 
 ## 🧩 Tech Stack
 
-| Technology                         | Purpose                       |
-| ---------------------------------- | ----------------------------- |
-| **React.js**                       | Frontend framework            |
-| **HTML5 / CSS3**                   | Structure and styling         |
-| **React Router DOM**               | Page navigation               |
-| **Firebase (optional)**            | Authentication / Data storage |
-| **Vite / Create React App**        | Development setup             |
-| **Google Fonts (Poppins / Inter)** | Typography                    |
+| Technology | Purpose |
+|------------|---------|
+| **React.js** (CRA) | Frontend framework |
+| **React Router DOM** | Navigation |
+| **Firebase Auth** | Login / signup |
+| **Cloud Firestore** | Syllabus, questions, quizzes |
+| **Lucide React** | Icons |
+| **HTML5 / CSS3** | Layout & styling |
+| **Google Fonts (Poppins)** | Typography |
 
 ---
 
@@ -35,31 +39,28 @@
 sharpchem/
 │
 ├── src/
-│   ├── components/
-│   │   ├── HomePage.jsx
-│   │   ├── AcademicsPage.jsx
-│   │   ├── Login.jsx
-│   │   ├── Signup.jsx
-│   │   ├── Navbar.jsx
-│   │   ├── Footer.jsx
-│   │
-│   ├── styles/
-│   │   ├── HomePage.css
-│   │   ├── AcademicsPage.css
-│   │   ├── Login.css
-│   │   ├── Signup.css
-│   │   ├── Navbar.css
-│   │   ├── Footer.css
-│   │
+│   ├── page/
+│   │   ├── academic-page/      # Academics hub
+│   │   ├── chapter-page/       # Learn chapter list
+│   │   ├── chapter-detail/     # Chapter outline + topic lesson
+│   │   ├── practice/           # Practice hub + drills
+│   │   ├── home-page/
+│   │   ├── auth/
+│   │   └── details/
+│   ├── components/             # Navbar, ProtectedRoute, popups
+│   ├── context/                # AuthContext
+│   ├── utils/practiceRoutes.js # URL ↔ Firestore mapping
+│   ├── firebase/
 │   ├── App.js
 │   └── index.js
 │
 ├── public/
-│   ├── index.html
-│   ├── logo.png
-│
+├── ARCHITECTURE.md
+├── README.md
 └── package.json
 ```
+
+See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for data model, routing, and Learn vs Practice flows.
 
 ---
 
@@ -84,31 +85,43 @@ sharpchem/
    npm start
    ```
 
+   App: [http://localhost:3000](http://localhost:3000)
+
 4. **Build for production**
 
    ```bash
    npm run build
    ```
 
+Firebase config: `src/firebase/firebase.config.js` (shared project with admin).
+
 ---
 
-## 🧠 Future Enhancements
+## 🗺️ URL cheat sheet
 
-* Integration with **Firebase Firestore** for real user data and progress tracking
-* Admin dashboard to upload and manage study materials
-* AI-powered chemistry problem solver
-* Bookmark and quiz history features
+| Mode | Example |
+|------|---------|
+| Learn chapters | `/class/9/standard`, `/class/11/jee` |
+| Topic lesson | `/class/11/jee/chapter/:chapterId/learn/:topicId` |
+| Practice list | `/class/9/standard/chapterList` |
+| Practice Qs | `/class/.../topic/:topicId/questions` |
+
+---
+
+## 🧠 Future / deferred
+
+* Persist student-details form & quiz attempts
+* Harden auth / security rules (shared with admin work)
+* Fill marketing placeholders (`/blog`, `/about`, `/contact`)
 
 ---
 
 ## 🧑‍💻 Contributing
 
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a new feature branch
-3. Commit your changes
-4. Submit a pull request
+1. Fork the repository  
+2. Create a feature branch  
+3. Commit your changes  
+4. Open a pull request  
 
 ---
 
@@ -120,9 +133,9 @@ This project is licensed under the **MIT License** — free to use and modify wi
 
 ## ✉️ Contact
 
-**Developer:** Harshit Parmar
-📧 [developersucks@gmail.com](mailto:developersucks@gmail.com)
-🌐 [SharpChem.in](#)
+**Developer:** Harshit Parmar  
+📧 [developersucks@gmail.com](mailto:developersucks@gmail.com)  
+🌐 SharpChem.in
 
 ---
 
