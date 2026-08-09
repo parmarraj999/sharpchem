@@ -25,7 +25,7 @@ const isCorrectOption = (question, option, optIdx) => {
 };
 
 const QuestionsPage = () => {
-  const { id, examType, chapterId, topicId } = useParams();
+  const { id, examType, chapterId } = useParams();
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,25 +37,49 @@ const QuestionsPage = () => {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      if (!classId || !chapterId || !topicId) return;
+      if (!classId || !chapterId) return;
       setLoading(true);
       try {
-        const questionsRef = collection(
+        const chapterPath = collection(
           db,
           'class_data',
           classId,
           'chapters',
           chapterId,
-          'topics',
-          topicId,
           'questions'
         );
-        const querySnapshot = await getDocs(questionsRef);
-
-        const questionsData = querySnapshot.docs.map((docSnap) => ({
+        const chapterSnap = await getDocs(chapterPath);
+        let questionsData = chapterSnap.docs.map((docSnap) => ({
           id: docSnap.id,
           ...docSnap.data(),
         }));
+
+        // Legacy fallback: older topic-scoped question banks
+        if (questionsData.length === 0) {
+          const topicsSnap = await getDocs(
+            collection(db, 'class_data', classId, 'chapters', chapterId, 'topics')
+          );
+          const legacy = [];
+          for (const topicDoc of topicsSnap.docs) {
+            const legacySnap = await getDocs(
+              collection(
+                db,
+                'class_data',
+                classId,
+                'chapters',
+                chapterId,
+                'topics',
+                topicDoc.id,
+                'questions'
+              )
+            );
+            legacySnap.docs.forEach((docSnap) => {
+              legacy.push({ id: docSnap.id, ...docSnap.data() });
+            });
+          }
+          questionsData = legacy;
+        }
+
         setQuestions(questionsData);
       } catch (error) {
         console.error('Error fetching questions:', error);
@@ -65,7 +89,7 @@ const QuestionsPage = () => {
     };
 
     fetchQuestions();
-  }, [classId, chapterId, topicId]);
+  }, [classId, chapterId]);
 
   const toggleSolution = (questionId) => {
     setExpandedSolutions((prev) => ({
@@ -233,7 +257,7 @@ const QuestionsPage = () => {
           })
         ) : (
           <div className="no-questions">
-            <p>No practice questions available for this topic yet.</p>
+            <p>No practice questions available for this chapter yet.</p>
           </div>
         )}
       </div>

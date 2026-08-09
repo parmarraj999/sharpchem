@@ -295,7 +295,6 @@ const StudentProfile = () => {
                     const href = practiceQuizPathFromFirestore(
                       a.classId,
                       a.chapterId,
-                      a.topicId,
                       a.quizId
                     );
                     return (

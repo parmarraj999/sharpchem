@@ -97,28 +97,53 @@
   margin: 0;
 }
 
-.view-topics-button {
-  background-color: #10b981;
-  color: white;
+.chapter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.chapter-action-btn {
   border: none;
-  padding: 12px 24px;
+  padding: 11px 14px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  align-self: flex-start;
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.view-topics-button:hover {
-  background-color: #059669;
-  transform: translateX(4px);
-  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+.chapter-action-btn--questions {
+  background-color: #2563eb;
+  color: white;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
-.view-topics-button:active {
-  transform: translateX(2px);
+.chapter-action-btn--questions:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.chapter-action-btn--quizzes {
+  background-color: #7c3aed;
+  color: white;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+}
+
+.chapter-action-btn--quizzes:hover {
+  background-color: #6d28d9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
+}
+
+.chapter-action-btn:active {
+  transform: translateY(0);
 }
 
 .no-chapters {
@@ -173,7 +198,7 @@
     padding: 16px;
   }
 
-  .view-topics-button {
-    width: 100%;
+  .chapter-actions {
+    grid-template-columns: 1fr;
   }
 }

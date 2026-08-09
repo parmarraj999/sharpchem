@@ -4,12 +4,12 @@ import { ArrowLeft, Clock, HelpCircle, ChevronRight } from 'lucide-react';
 import './quizListPage.css';
 import { db } from '../../../firebase/firebase.config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { resolvePracticeClassId } from '../../../utils/practiceRoutes';
+import { resolvePracticeClassId, practiceQuizPath } from '../../../utils/practiceRoutes';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchLatestAttemptsByQuizIds } from '../../../utils/quizAttempts';
 
 const QuizListPage = () => {
-    const { id, examType, chapterId, topicId } = useParams();
+    const { id, examType, chapterId } = useParams();
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [quizzes, setQuizzes] = useState([]);
@@ -23,15 +23,14 @@ const QuizListPage = () => {
 
     useEffect(() => {
         const fetchQuizzes = async () => {
-            if (!classId || !chapterId || !topicId) return;
+            if (!classId || !chapterId) return;
             setLoading(true);
             try {
                 const quizzesRef = collection(db, 'quizzes');
                 const q = query(
                     quizzesRef,
                     where('classId', '==', classId),
-                    where('chapterId', '==', chapterId),
-                    where('topicId', '==', topicId)
+                    where('chapterId', '==', chapterId)
                 );
                 const querySnapshot = await getDocs(q);
 
@@ -58,14 +57,14 @@ const QuizListPage = () => {
         };
 
         fetchQuizzes();
-    }, [classId, chapterId, topicId, currentUser?.uid]);
+    }, [classId, chapterId, currentUser?.uid]);
 
     const handleBack = () => {
         navigate(-1);
     };
 
     const handleStartQuiz = (quizId) => {
-        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quiz/${quizId}`);
+        navigate(practiceQuizPath(id, examType, chapterId, quizId));
     };
 
     return (
@@ -144,7 +143,7 @@ const QuizListPage = () => {
                     </div>
                 ) : (
                     <div className="no-quizzes">
-                        <p>No quizzes available for this topic yet.</p>
+                        <p>No quizzes available for this chapter yet.</p>
                     </div>
                 )}
             </div>

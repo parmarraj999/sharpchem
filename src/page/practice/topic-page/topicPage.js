@@ -3,54 +3,47 @@ import { ArrowLeft } from 'lucide-react';
 import "./topicPage.css"
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/firebase.config';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
-import { resolvePracticeClassId, practiceTrackLabel } from '../../../utils/practiceRoutes';
+import { doc, getDoc } from 'firebase/firestore';
+import {
+    resolvePracticeClassId,
+    practiceTrackLabel,
+    practiceQuestionsPath,
+    practiceQuizListPath,
+} from '../../../utils/practiceRoutes';
 
+/** Chapter practice hub — questions & quizzes are chapter-scoped (not per topic). */
 const TopicListPage = () => {
     const { id, examType, chapterId } = useParams();
     const navigate = useNavigate();
-    const [topics, setTopics] = useState([]);
+    const [chapterName, setChapterName] = useState('');
     const [loading, setLoading] = useState(true);
 
     const classId = resolvePracticeClassId(id, examType);
 
     useEffect(() => {
-        const fetchTopics = async () => {
+        const fetchChapter = async () => {
             if (!classId || !chapterId) return;
             setLoading(true);
             try {
-                const topicsRef = collection(db, 'class_data', classId, 'chapters', chapterId, 'topics');
-                const q = query(topicsRef, orderBy('order', 'asc'));
-                const querySnapshot = await getDocs(q);
-                
-                const topicsData = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setTopics(topicsData);
+                const snap = await getDoc(doc(db, 'class_data', classId, 'chapters', chapterId));
+                setChapterName(snap.exists() ? snap.data().name || '' : '');
             } catch (error) {
-                console.error("Error fetching topics:", error);
+                console.error("Error fetching chapter:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchTopics();
+        fetchChapter();
     }, [classId, chapterId]);
 
-    const handleStartQuestions = (topicId) => {
-        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/questions`);
-    };
-
-    const handleStartQuiz = (topicId) => {
-        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`);
-    };
-
     const handleBack = () => {
-        navigate(-1);
+        navigate(`/class/${id}/${examType}/chapterList`);
     };
 
-    const pageTitle = `${practiceTrackLabel(id, examType)} – Chapter Topics`;
+    const pageTitle = chapterName
+        ? `${chapterName} – Practice`
+        : `${practiceTrackLabel(id, examType)} – Practice`;
 
     return (
         <div className="topic-list-container">
@@ -66,40 +59,46 @@ const TopicListPage = () => {
                 </div>
             </header>
 
-                {loading ? (
-                    <div className="loading-container">
-                        <p>Loading topics...</p>
+            {loading ? (
+                <div className="loading-container">
+                    <p>Loading…</p>
+                </div>
+            ) : (
+                <div className="topics-grid">
+                    <div className="topic-card">
+                        <h2 className="topic-title">Practice Questions</h2>
+                        <p className="topic-description">
+                            Drill chapter questions with instant feedback.
+                        </p>
+                        <div className="button-group">
+                            <button
+                                type="button"
+                                className="start-button"
+                                onClick={() => navigate(practiceQuestionsPath(id, examType, chapterId))}
+                            >
+                                Start Questions
+                                <span className="button-arrow">→</span>
+                            </button>
+                        </div>
                     </div>
-                ) : topics.length > 0 ? (
-                    <div className="topics-grid">
-                        {topics.map((topic) => (
-                            <div key={topic.id} className="topic-card">
-                                <h2 className="topic-title">{topic.name}</h2>
-                                <p className="topic-description">{topic.description || "Explore this topic for practice and assessment."}</p>
-                                <div className="button-group">
-                                    <button
-                                        className="start-button"
-                                        onClick={() => handleStartQuestions(topic.id)}
-                                    >
-                                        Practice Questions
-                                        <span className="button-arrow">→</span>
-                                    </button>
-                                    <button
-                                        className="quiz-button"
-                                        onClick={() => handleStartQuiz(topic.id)}
-                                    >
-                                        Take Quiz
-                                        <span className="button-arrow">→</span>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="topic-card">
+                        <h2 className="topic-title">Quizzes</h2>
+                        <p className="topic-description">
+                            Timed chapter quizzes to check your understanding.
+                        </p>
+                        <div className="button-group">
+                            <button
+                                type="button"
+                                className="quiz-button"
+                                onClick={() => navigate(practiceQuizListPath(id, examType, chapterId))}
+                            >
+                                Take Quiz
+                                <span className="button-arrow">→</span>
+                            </button>
+                        </div>
                     </div>
-                ) : (
-                    <div className="no-topics">
-                        <p>No topics found for this chapter.</p>
-                    </div>
-                )}
+                </div>
+            )}
         </div>
     );
 };

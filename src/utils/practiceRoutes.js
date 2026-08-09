@@ -157,25 +157,31 @@ export function practiceTopicsPathFromFirestore(firestoreClassId, chapterId) {
   return `/class/${parsed.id}/${parsed.examType}/chapter/${chapterId}/topics`;
 }
 
-/** Practice: quiz list for a topic */
-export function practiceQuizListPath(id, examType, chapterId, topicId) {
-  if (!id || !examType || !chapterId || !topicId) return '/practice';
-  return `/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`;
+/** Practice: quiz list for a chapter */
+export function practiceQuizListPath(id, examType, chapterId) {
+  if (!id || !examType || !chapterId) return '/practice';
+  return `/class/${id}/${examType}/chapter/${chapterId}/quizzes`;
 }
 
-/** Practice: take a quiz */
-export function practiceQuizPath(id, examType, chapterId, topicId, quizId) {
-  if (!id || !examType || !chapterId || !topicId || !quizId) return '/practice';
-  return `/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quiz/${quizId}`;
+/** Practice: take a quiz (chapter-scoped) */
+export function practiceQuizPath(id, examType, chapterId, quizId) {
+  if (!id || !examType || !chapterId || !quizId) return '/practice';
+  return `/class/${id}/${examType}/chapter/${chapterId}/quiz/${quizId}`;
+}
+
+/** Practice: chapter question bank */
+export function practiceQuestionsPath(id, examType, chapterId) {
+  if (!id || !examType || !chapterId) return '/practice';
+  return `/class/${id}/${examType}/chapter/${chapterId}/questions`;
 }
 
 /**
- * Firestore class id + chapter/topic/quiz → practice quiz path
+ * Firestore class id + chapter/quiz → practice quiz path
  */
-export function practiceQuizPathFromFirestore(firestoreClassId, chapterId, topicId, quizId) {
+export function practiceQuizPathFromFirestore(firestoreClassId, chapterId, quizId) {
   const parsed = parseFirestoreClassId(firestoreClassId);
-  if (!parsed || !chapterId || !topicId || !quizId) return '/practice';
-  return practiceQuizPath(parsed.id, parsed.examType, chapterId, topicId, quizId);
+  if (!parsed || !chapterId || !quizId) return '/practice';
+  return practiceQuizPath(parsed.id, parsed.examType, chapterId, quizId);
 }
 
 /** Whether pathname is a practice (drill) route under /class/... */
@@ -184,6 +190,9 @@ export function isPracticeClassPath(pathname) {
   if (/\/class\/[^/]+\/(standard|jee|neet)\/chapterList(\/|$)/i.test(pathname)) return true;
   if (/\/class\/[^/]+\/(standard|jee|neet)\/quizzes(\/|$)/i.test(pathname)) return true;
   if (/\/class\/[^/]+\/(standard|jee|neet)\/chapter\/[^/]+\/topics(\/|$)/i.test(pathname)) return true;
+  if (/\/class\/[^/]+\/(standard|jee|neet)\/chapter\/[^/]+\/(questions|quizzes|quiz)(\/|$)/i.test(pathname)) {
+    return true;
+  }
   if (/\/class\/[^/]+\/(standard|jee|neet)\/chapter\/[^/]+\/topic\//i.test(pathname)) return true;
   return false;
 }

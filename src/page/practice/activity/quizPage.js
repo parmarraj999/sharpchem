@@ -9,7 +9,7 @@ import { resolvePracticeClassId } from '../../../utils/practiceRoutes';
 import { saveQuizAttempt } from '../../../utils/quizAttempts';
 
 const QuizPage = () => {
-  const { id, examType, chapterId, topicId, quizId } = useParams();
+  const { id, examType, chapterId, quizId } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -132,7 +132,7 @@ const QuizPage = () => {
           quizTitle: meta?.title || '',
           classId,
           chapterId,
-          topicId,
+          topicId: '',
           examType,
           score,
           total: qs.length,
@@ -148,7 +148,7 @@ const QuizPage = () => {
         setSavingAttempt(false);
       }
     },
-    [currentUser, quizId, classId, chapterId, topicId, examType]
+    [currentUser, quizId, classId, chapterId, examType]
   );
 
   const finishQuiz = useCallback(

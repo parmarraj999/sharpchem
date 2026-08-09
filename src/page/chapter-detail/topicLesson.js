@@ -5,7 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase.config';
 import {
   resolvePracticeClassId,
-  practiceTopicsPathFromFirestore,
+  practiceQuestionsPath,
   academicsChapterPath,
   parseFirestoreClassId,
 } from '../../utils/practiceRoutes';
@@ -96,10 +96,8 @@ const TopicLessonPage = () => {
   };
 
   const handlePractice = () => {
-    const chapterPractice = practiceTopicsPathFromFirestore(firestoreClassId, chapterId);
-    if (!chapterPractice) return;
-    const base = chapterPractice.replace(/\/topics$/, '');
-    navigate(`${base}/topic/${topicId}/questions`);
+    if (!id || !examType || !chapterId) return;
+    navigate(practiceQuestionsPath(id, examType, chapterId));
   };
 
   if (loading) {

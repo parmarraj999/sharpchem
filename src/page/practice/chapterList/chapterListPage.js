@@ -6,6 +6,8 @@ import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import {
     resolvePracticeClassId,
     practiceTrackLabel,
+    practiceQuestionsPath,
+    practiceQuizListPath,
 } from '../../../utils/practiceRoutes';
 
 const ChapterListPage = () => {
@@ -41,10 +43,6 @@ const ChapterListPage = () => {
         fetchChapters();
     }, [classId]);
 
-    const handleViewTopics = (chapterId) => {
-        navigate(`/class/${id}/${examType}/chapter/${chapterId}/topics`);
-    };
-
     const handleBack = () => {
         navigate('/practice');
     };
@@ -72,13 +70,22 @@ const ChapterListPage = () => {
                                 <h2 className="chapter-name">{chapter.name}</h2>
                                 <p className="chapter-description">{chapter.description}</p>
                             </div>
-                            <button
-                                type="button"
-                                className="view-topics-button"
-                                onClick={() => handleViewTopics(chapter.id)}
-                            >
-                                View Topics →
-                            </button>
+                            <div className="chapter-actions">
+                                <button
+                                    type="button"
+                                    className="chapter-action-btn chapter-action-btn--questions"
+                                    onClick={() => navigate(practiceQuestionsPath(id, examType, chapter.id))}
+                                >
+                                    Practice Questions
+                                </button>
+                                <button
+                                    type="button"
+                                    className="chapter-action-btn chapter-action-btn--quizzes"
+                                    onClick={() => navigate(practiceQuizListPath(id, examType, chapter.id))}
+                                >
+                                    Quizzes
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

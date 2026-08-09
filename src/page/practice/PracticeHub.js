@@ -43,7 +43,7 @@ const PracticeHub = () => {
       <div className="practice-hub">
         <div className="practice-hub-inner">
           <p className="practice-hub-lead">
-            Pick a track, choose a chapter and topic, then work through practice questions or timed quizzes.
+            Pick a track, choose a chapter, then work through practice questions or timed quizzes.
             Lessons (video &amp; notes) live under Academics → chapter → topic.
           </p>
 

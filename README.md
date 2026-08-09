@@ -106,7 +106,9 @@ Firebase config is loaded from `.env` (gitignored). Template: `.env.example` (sa
 | Learn chapters | `/class/9/standard`, `/class/11/jee` |
 | Topic lesson | `/class/11/jee/chapter/:chapterId/learn/:topicId` |
 | Practice list | `/class/9/standard/chapterList` |
-| Practice Qs | `/class/.../topic/:topicId/questions` |
+| Practice hub | `/class/.../chapter/:chapterId/topics` |
+| Practice Qs | `/class/.../chapter/:chapterId/questions` |
+| Chapter quizzes | `/class/.../chapter/:chapterId/quizzes` |
 
 ---
 

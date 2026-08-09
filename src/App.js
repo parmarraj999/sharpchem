@@ -25,12 +25,31 @@ import {
   academicsClassPath,
   academicsLessonPath,
   parseFirestoreClassId,
+  practiceQuestionsPath,
+  practiceQuizListPath,
+  practiceQuizPath,
 } from './utils/practiceRoutes';
 
 /** Legacy class-level /quizzes URL had no quizId — send users to chapter list instead. */
 const RedirectToChapterList = () => {
   const { id, examType } = useParams();
   return <Navigate to={`/class/${id}/${examType}/chapterList`} replace />;
+};
+
+/** Old topic-scoped practice → chapter practice */
+const RedirectLegacyTopicQuestions = () => {
+  const { id, examType, chapterId } = useParams();
+  return <Navigate to={practiceQuestionsPath(id, examType, chapterId)} replace />;
+};
+
+const RedirectLegacyTopicQuizList = () => {
+  const { id, examType, chapterId } = useParams();
+  return <Navigate to={practiceQuizListPath(id, examType, chapterId)} replace />;
+};
+
+const RedirectLegacyTopicQuiz = () => {
+  const { id, examType, chapterId, quizId } = useParams();
+  return <Navigate to={practiceQuizPath(id, examType, chapterId, quizId)} replace />;
 };
 
 /** Old /class/class_9 or /class/11_jee → /class/9/standard or /class/11/jee */
@@ -93,13 +112,26 @@ function App() {
             <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
 
-            {/* Practice (drill) — more specific paths first */}
+            {/* Practice (drill) — chapter-scoped; more specific paths first */}
             <Route path="/class/:id/:examType/quizzes" element={<ProtectedRoute><RedirectToChapterList /></ProtectedRoute>} />
             <Route path="/class/:id/:examType/chapterList" element={<ProtectedRoute><ChapterListPage /></ProtectedRoute>} />
             <Route path="/class/:id/:examType/chapter/:chapterId/topics" element={<ProtectedRoute><TopicListPage /></ProtectedRoute>} />
-            <Route path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes" element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
-            <Route path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
-            <Route path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions" element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
+            <Route path="/class/:id/:examType/chapter/:chapterId/quizzes" element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
+            <Route path="/class/:id/:examType/chapter/:chapterId/quiz/:quizId" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
+            <Route path="/class/:id/:examType/chapter/:chapterId/questions" element={<ProtectedRoute><QuestionsPage /></ProtectedRoute>} />
+            {/* Legacy topic-scoped practice → chapter routes */}
+            <Route
+              path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes"
+              element={<ProtectedRoute><RedirectLegacyTopicQuizList /></ProtectedRoute>}
+            />
+            <Route
+              path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId"
+              element={<ProtectedRoute><RedirectLegacyTopicQuiz /></ProtectedRoute>}
+            />
+            <Route
+              path="/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions"
+              element={<ProtectedRoute><RedirectLegacyTopicQuestions /></ProtectedRoute>}
+            />
 
             {/* Academics (learn) */}
             <Route path="/class/:id/:examType/chapter/:chapterId/learn/:topicId" element={<ProtectedRoute><TopicLessonPage /></ProtectedRoute>} />

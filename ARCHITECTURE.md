@@ -70,13 +70,15 @@ Tracks (Firestore document ids under `class_data/`):
 ```text
 /practice
 /class/:id/:examType/chapterList
-/class/:id/:examType/chapter/:chapterId/topics
-/class/:id/:examType/chapter/:chapterId/topic/:topicId/questions
-/class/:id/:examType/chapter/:chapterId/topic/:topicId/quizzes
-/class/:id/:examType/chapter/:chapterId/topic/:topicId/quiz/:quizId
+/class/:id/:examType/chapter/:chapterId/topics          → chapter practice hub
+/class/:id/:examType/chapter/:chapterId/questions
+/class/:id/:examType/chapter/:chapterId/quizzes
+/class/:id/:examType/chapter/:chapterId/quiz/:quizId
 ```
 
-Practice paths are distinguished from learn by suffixes (`chapterList`, `topics`, `topic/...`). Navbar active state uses `isPracticeClassPath` / `isAcademicsClassPath`.
+Practice is **chapter-scoped** (questions + quizzes). Learn content stays topic-scoped under `/learn/:topicId`. Old `/topic/:topicId/questions|quizzes|quiz/...` URLs redirect to the chapter paths.
+
+Navbar active state uses `isPracticeClassPath` / `isAcademicsClassPath`.
 
 Legacy paths (`/class/class_9`, `/class/:firestoreId/chapter/...`) **redirect** to the clean scheme.
 
@@ -121,8 +123,8 @@ Pages resolve Firestore ids from route params, then call Firestore (`collection`
 
 ```text
 class_data/{firestoreClassId}/chapters/{chapterId}
-class_data/{firestoreClassId}/chapters/{chapterId}/topics/{topicId}
-class_data/{firestoreClassId}/chapters/{chapterId}/topics/{topicId}/questions/{questionId}
+class_data/{firestoreClassId}/chapters/{chapterId}/topics/{topicId}   # learn only
+class_data/{firestoreClassId}/chapters/{chapterId}/questions/{questionId}  # practice bank
 ```
 
 Typical fields:
@@ -131,9 +133,11 @@ Typical fields:
 - Topic: `name`, `description`, `order`, `videoUrl`, `noteUrl`  
 - Question: prompt, options, correct index/key, optional image URL  
 
+Legacy topic-nested `.../topics/{topicId}/questions` may still exist; student/admin loaders fall back to them when the chapter bank is empty.
+
 ### Quizzes
 
-Top-level `quizzes` collection documents include `classId` (Firestore id), `chapterId`, `topicId`, `title`, `duration`, `examType`, etc. Student quiz list queries by those fields.
+Top-level `quizzes` collection documents include `classId` (Firestore id), `chapterId`, `title`, `duration`, `examType`, etc. (`topicId` is unused / empty). Student quiz list queries by `classId` + `chapterId`.
 
 ### Quiz attempts (analytics)
 
