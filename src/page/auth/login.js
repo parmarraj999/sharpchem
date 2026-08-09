@@ -2,8 +2,15 @@ import React, { useEffect, useState } from 'react';
 import './login.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import GoogleLoginButton from '../../function/googleSignUp';
-import { ChevronLeft } from 'lucide-react';
-import { emailPasswordLogin } from '../../firebase/authFunctions';
+import { ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import {
+  emailPasswordLogin,
+  getSignInMethodsForEmail,
+  sendPasswordReset,
+  resendVerificationWithPassword,
+  isUserEmailVerified,
+} from '../../firebase/authFunctions';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,10 +21,28 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [resetInfo, setResetInfo] = useState("");
+  const [needsVerification, setNeedsVerification] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAuth();
   const redirectTo = location.state?.from?.pathname || '/';
+
+  useEffect(() => {
+    const presetEmail = location.state?.email;
+    if (presetEmail) {
+      setFormData((prev) => ({ ...prev, email: presetEmail }));
+    }
+    if (location.state?.needVerification) {
+      setNeedsVerification(true);
+      setErrors({
+        password:
+          "Please verify your email before accessing SharpChem. Check your inbox, or resend the link below.",
+      });
+    }
+  }, [location.state?.email, location.state?.needVerification]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,49 +85,132 @@ const Login = () => {
 
     setLoading(true);
     setMessage("");
+    setNeedsVerification(false);
+    setResetInfo("");
 
     const response = await emailPasswordLogin(formData.email, formData.password);
 
     if (response.success) {
+      setErrors({});
       setMessage("Login successful!");
-      window.localStorage.setItem('userId',response.user.uid)
-      window.localStorage.setItem('isLogIn',true) 
       setTimeout(() => navigate(redirectTo, { replace: true }), 1000);
     } else {
-      let errorMsg = response.error;
+      let errorMsg = "Wrong email or password.";
+      let field = "password";
 
-      // Firebase-specific error handling
       switch (response.errorCode) {
-        case "auth/user-not-found":
-          errorMsg = "No account found with this email.";
-          setErrors(prev => ({ ...prev, email: errorMsg }));
+        case "auth/email-not-verified":
+          errorMsg = response.error;
+          field = "password";
+          setNeedsVerification(true);
           break;
 
+        case "auth/invalid-credential":
         case "auth/wrong-password":
-          errorMsg = "Incorrect password. Try again.";
-          setErrors(prev => ({ ...prev, password: errorMsg }));
+        case "auth/user-not-found":
+        case "auth/invalid-login-credentials": {
+          const methods = await getSignInMethodsForEmail(formData.email);
+          if (methods.includes("google.com") && !methods.includes("password")) {
+            errorMsg =
+              "This email uses Google sign-in (no password yet). Use Continue with Google, or tap Forgot Password to set one so both methods work.";
+          } else if (methods.includes("google.com") && methods.includes("password")) {
+            errorMsg = "Wrong password. Or sign in with Google for this email.";
+          } else {
+            errorMsg = "Wrong email or password.";
+          }
+          field = "password";
           break;
+        }
 
         case "auth/invalid-email":
           errorMsg = "Invalid email format.";
-          setErrors(prev => ({ ...prev, email: errorMsg }));
+          field = "email";
+          break;
+
+        case "auth/too-many-requests":
+          errorMsg = "Too many failed attempts. Please try again later.";
+          field = "password";
+          break;
+
+        case "auth/network-request-failed":
+          errorMsg = "Network error. Check your connection and try again.";
+          field = "password";
+          break;
+
+        case "auth/user-disabled":
+          errorMsg = "This account has been disabled.";
+          field = "email";
           break;
 
         default:
-          errorMsg = "Login failed. Please try again.";
+          errorMsg = "Wrong email or password.";
+          field = "password";
       }
 
-      setMessage(errorMsg);
+      setErrors((prev) => ({ ...prev, [field]: errorMsg }));
     }
 
     setLoading(false);
   };
 
+  const handleResendVerification = async (e) => {
+    e.preventDefault();
+    setResetInfo("");
+    if (!formData.email.trim() || !formData.password) {
+      setErrors({
+        password: "Enter the email and password you signed up with, then resend.",
+      });
+      return;
+    }
+    setLoading(true);
+    const result = await resendVerificationWithPassword(formData.email, formData.password);
+    setLoading(false);
+    if (result.success) {
+      setNeedsVerification(true);
+      setResetInfo("Verification email sent again. Check your inbox (and spam), then sign in.");
+      setErrors({});
+    } else if (result.errorCode === "already-verified") {
+      setNeedsVerification(false);
+      setResetInfo(result.error);
+      setErrors({});
+    } else {
+      setErrors({
+        password: result.errorCode?.includes("credential") || result.errorCode === "auth/wrong-password"
+          ? "Wrong email or password — can't resend without the correct password."
+          : (result.error || "Could not resend verification email."),
+      });
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setResetInfo("");
+    setErrors({});
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrors({ email: "Enter your email above, then tap Forgot Password." });
+      return;
+    }
+    setLoading(true);
+    const result = await sendPasswordReset(formData.email);
+    setLoading(false);
+    if (result.success) {
+      setResetInfo(
+        "Password reset email sent. After you set a new password, you can use email/password and Google on the same account (if Google is linked)."
+      );
+    } else {
+      setErrors({
+        email: result.errorCode === "auth/user-not-found"
+          ? "No account found with this email."
+          : (result.error || "Could not send reset email."),
+      });
+    }
+  };
+
   useEffect(() => {
-    if (window.localStorage.getItem('isLogIn')) {
+    if (currentUser && isUserEmailVerified(currentUser)) {
       navigate(redirectTo, { replace: true });
     }
-  }, [navigate, redirectTo]);
+  }, [currentUser, navigate, redirectTo]);
 
   return (
     <div className="login-container">
@@ -134,9 +242,10 @@ const Login = () => {
             <p className="login-subtitle">Welcome back! Login to continue learning.</p>
           </div>
 
-          {message && <p className="server-message" style={{color:'red'}}>{message}</p>}
-
-          <form className="login-form">
+          <form
+            className="login-form"
+            onSubmit={handleSubmit}
+          >
 
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
@@ -154,27 +263,47 @@ const Login = () => {
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className={errors.password ? 'error' : ''}
-              />
+              <div className="password-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className={errors.password ? 'error' : ''}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {errors.password && <span className="error-message">{errors.password}</span>}
+              {message && <span className="success-message">{message}</span>}
             </div>
 
             <div className="forgot-password">
-              <a href="#forgot">Forgot Password?</a>
+              <a href="#forgot" onClick={handleForgotPassword}>Forgot Password?</a>
             </div>
+            {needsVerification && (
+              <div className="forgot-password">
+                <a href="#resend-verify" onClick={handleResendVerification}>
+                  Resend verification email
+                </a>
+              </div>
+            )}
+            {resetInfo && <span className="success-message">{resetInfo}</span>}
 
-            <button type="submit" className="login-btn" onClick={handleSubmit}>
+            <button type="submit" className="login-btn" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
 
-            <GoogleLoginButton/>
+            <GoogleLoginButton />
 
             <div className="login-footer">
               <p>Don't have an account? <Link to='/signup' className="signup-link">Sign up</Link></p>

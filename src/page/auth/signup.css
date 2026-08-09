@@ -401,3 +401,54 @@ body {
     width: 100%;
   }
 }
+
+/* Post-signup: verify email before access */
+.verify-email-panel {
+  position: relative;
+  z-index: 2;
+  max-width: 440px;
+  width: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px 36px;
+  text-align: center;
+  box-shadow: 0 20px 40px -12px rgb(15 23 42 / 0.15);
+}
+
+.verify-email-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify-email-panel h2 {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.verify-email-panel p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.verify-email-panel .modern-submit-btn {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.verify-email-hint {
+  font-size: 0.8rem !important;
+  margin-bottom: 0 !important;
+  color: #94a3b8 !important;
+}

@@ -157,6 +157,27 @@ export function practiceTopicsPathFromFirestore(firestoreClassId, chapterId) {
   return `/class/${parsed.id}/${parsed.examType}/chapter/${chapterId}/topics`;
 }
 
+/** Practice: quiz list for a topic */
+export function practiceQuizListPath(id, examType, chapterId, topicId) {
+  if (!id || !examType || !chapterId || !topicId) return '/practice';
+  return `/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quizzes`;
+}
+
+/** Practice: take a quiz */
+export function practiceQuizPath(id, examType, chapterId, topicId, quizId) {
+  if (!id || !examType || !chapterId || !topicId || !quizId) return '/practice';
+  return `/class/${id}/${examType}/chapter/${chapterId}/topic/${topicId}/quiz/${quizId}`;
+}
+
+/**
+ * Firestore class id + chapter/topic/quiz → practice quiz path
+ */
+export function practiceQuizPathFromFirestore(firestoreClassId, chapterId, topicId, quizId) {
+  const parsed = parseFirestoreClassId(firestoreClassId);
+  if (!parsed || !chapterId || !topicId || !quizId) return '/practice';
+  return practiceQuizPath(parsed.id, parsed.examType, chapterId, topicId, quizId);
+}
+
 /** Whether pathname is a practice (drill) route under /class/... */
 export function isPracticeClassPath(pathname) {
   if (!pathname) return false;

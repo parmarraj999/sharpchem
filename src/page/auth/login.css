@@ -145,10 +145,55 @@ body {
   border-color: #f44336;
 }
 
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: #78909c;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #1e88e5;
+  background: rgba(30, 136, 229, 0.08);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid #1e88e5;
+  outline-offset: 2px;
+}
+
 .error-message {
   color: #f44336;
   font-size: 13px;
   margin-top: -4px;
+}
+
+.success-message {
+  color: #2e7d32;
+  font-size: 13px;
+  margin-top: -4px;
+  font-weight: 500;
 }
 
 /* Forgot Password */

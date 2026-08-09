@@ -13,13 +13,6 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
-            if (user) {
-                window.localStorage.setItem('isLogIn', 'true');
-                window.localStorage.setItem('userId', user.uid);
-            } else {
-                window.localStorage.removeItem('isLogIn');
-                window.localStorage.removeItem('userId');
-            }
             setLoading(false);
         });
 

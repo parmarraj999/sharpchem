@@ -295,6 +295,30 @@ body {
   transform: translateX(5px);
 }
 
+.activity-item-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.activity-item-link .arrow {
+  color: var(--text-light);
+}
+
+.dash-empty {
+  margin: 0;
+  padding: 12px 4px;
+  color: var(--text-light);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+a.view-all-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
 .activity-thumb {
   width: 44px;
   height: 44px;

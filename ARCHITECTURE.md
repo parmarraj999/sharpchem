@@ -135,9 +135,13 @@ Typical fields:
 
 Top-level `quizzes` collection documents include `classId` (Firestore id), `chapterId`, `topicId`, `title`, `duration`, `examType`, etc. Student quiz list queries by those fields.
 
+### Quiz attempts (analytics)
+
+Top-level `quiz_attempts` — one doc per finished attempt (`uid`, quiz/track ids, score, answers, `createdAt`). Written on submit / timeout from `quizPage.js` via `utils/quizAttempts.js`. Admin reads them at `/admin/analytics`.
+
 ### Auth
 
-`AuthContext` + Firebase Auth. Profile/details pages exist; full persistence of student-details / quiz attempts is still evolving (see workspace `CURRENT_TASKS.md`).
+`AuthContext` + Firebase Auth is the source of truth (`currentUser.uid`). Do **not** use `localStorage` `isLogIn` / `userId` flags.
 
 ---
 

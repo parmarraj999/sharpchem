@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { isUserEmailVerified, signOutUser } from '../firebase/authFunctions';
 
 const ProtectedRoute = ({ children }) => {
     const { currentUser, loading } = useAuth();
     const location = useLocation();
+
+    useEffect(() => {
+        if (currentUser && !isUserEmailVerified(currentUser)) {
+            signOutUser();
+        }
+    }, [currentUser]);
 
     if (loading) {
         return (
@@ -30,9 +37,18 @@ const ProtectedRoute = ({ children }) => {
         );
     }
 
-    if (!currentUser) {
-        // Redirect to login but save the current location to redirect back after login
-        return <Navigate to="/login" state={{ from: location }} replace />;
+    if (!currentUser || !isUserEmailVerified(currentUser)) {
+        return (
+            <Navigate
+                to="/login"
+                state={{
+                    from: location,
+                    email: currentUser?.email || undefined,
+                    needVerification: currentUser && !isUserEmailVerified(currentUser),
+                }}
+                replace
+            />
+        );
     }
 
     return children;

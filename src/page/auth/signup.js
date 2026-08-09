@@ -12,7 +12,7 @@ import {
   GraduationCap,
   ChevronLeft
 } from 'lucide-react';
-import { emailPasswordSignup } from '../../firebase/authFunctions';
+import { emailPasswordSignup, signOutUser } from '../../firebase/authFunctions';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase.config';
 
@@ -33,6 +33,7 @@ const Signup = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
 
   const navigate = useNavigate();
 
@@ -75,18 +76,53 @@ const Signup = () => {
     const response = await emailPasswordSignup(formData.email, formData.password);
 
     if (response.success) {
-      setMessage("Account created successfully!");
-      await setDoc(doc(db, "users", response.user.uid), {
-        ...formData,
-        name: `${formData.firstName} ${formData.lastName}`,
-        createdAt: new Date()
-      });
-      setTimeout(() => navigate("/"), 2000);
+      try {
+        await setDoc(doc(db, "users", response.user.uid), {
+          ...formData,
+          name: `${formData.firstName} ${formData.lastName}`,
+          createdAt: new Date()
+        });
+      } catch (profileErr) {
+        console.warn("Could not save profile after signup:", profileErr);
+      }
+      // Firebase signs the user in on create — sign out until they verify
+      await signOutUser();
+      setAwaitingVerification(true);
     } else {
       setMessage(response.error || "Signup failed");
     }
     setLoading(false);
   };
+
+  if (awaitingVerification) {
+    return (
+      <div className="modern-signup-container">
+        <div className="glass-blob blob-1"></div>
+        <div className="glass-blob blob-2"></div>
+
+        <div className="verify-email-panel">
+          <div className="verify-email-icon" aria-hidden>
+            <Mail size={40} />
+          </div>
+          <h2>Verify your email</h2>
+          <p>
+            We sent a verification link to <strong>{formData.email}</strong>.
+            Open your inbox, confirm the address, then sign in. You can&apos;t access the app until the email is verified.
+          </p>
+          <button
+            type="button"
+            className="modern-submit-btn"
+            onClick={() => navigate('/login', { state: { email: formData.email } })}
+          >
+            Go to Sign in
+          </button>
+          <p className="verify-email-hint">
+            Didn&apos;t get it? Check spam, or sign in later and use &ldquo;Resend verification&rdquo;.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modern-signup-container">
@@ -211,7 +247,7 @@ const Signup = () => {
               {loading ? <span className="loader"></span> : "Sign Up Now"}
             </button>
 
-            {message && <div className={`form-message ${message.includes('success') ? 'success' : 'error'}`}>{message}</div>}
+            {message && <div className="form-message error">{message}</div>}
 
             <div className="form-footer">
               <p>Already have an account? <Link to="/login">Login</Link></p>

@@ -73,10 +73,12 @@ See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for data model, routing, and Learn 
    cd sharpchem
    ```
 
-2. **Install dependencies**
+2. **Install dependencies & env**
 
    ```bash
    npm install
+   cp .env.example .env
+   # Fill REACT_APP_FIREBASE_* from Firebase Console → Project settings → Your apps
    ```
 
 3. **Run the development server**
@@ -93,7 +95,7 @@ See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for data model, routing, and Learn 
    npm run build
    ```
 
-Firebase config: `src/firebase/firebase.config.js` (shared project with admin).
+Firebase config is loaded from `.env` (gitignored). Template: `.env.example` (same project as admin).
 
 ---
 
