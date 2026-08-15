@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { isUserEmailVerified, signOutUser } from '../firebase/authFunctions';
 
 const ProtectedRoute = ({ children }) => {
-    const { currentUser, loading } = useAuth();
+    const { currentUser, loading, profileComplete } = useAuth();
     const location = useLocation();
 
     useEffect(() => {
@@ -49,6 +49,10 @@ const ProtectedRoute = ({ children }) => {
                 replace
             />
         );
+    }
+
+    if (!profileComplete && location.pathname !== '/student-detail') {
+        return <Navigate to="/student-detail" replace />;
     }
 
     return children;

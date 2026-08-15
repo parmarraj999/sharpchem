@@ -1,19 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Info } from "lucide-react";
 import "./studentDetail.css";
 import { useNavigate } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase.config";
+import { useAuth } from "../../context/AuthContext";
 
 export default function StudentDetailsForm() {
+  const { currentUser, profile, refreshProfile } = useAuth();
   const [formData, setFormData] = useState({
     currentClass: "",
     goal: "",
     mobile: "",
     state: "",
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const classOptions = ["Class 9", "Class 10", "Class 11", "Class 12", "Droppers"];
+  const goalOptions = ["JEE", "NEET", "Boards"];
 
   const stateOptions = [
     "Andhra Pradesh","Karnataka","Kerala","Tamil Nadu","Telangana","Maharashtra",
@@ -22,27 +29,66 @@ export default function StudentDetailsForm() {
     "Uttarakhand","Himachal Pradesh","Assam","Goa","Other",
   ];
 
-  const handleSubmit = () => {
-    if (!formData.currentClass || !formData.goal || !formData.mobile) {
-      alert("Please fill all required fields");
+  useEffect(() => {
+    if (!profile) return;
+    setFormData((prev) => ({
+      currentClass: profile.currentClass || prev.currentClass,
+      goal: profile.goal || profile.examType || prev.goal,
+      mobile: profile.mobile || profile.contactNumber || prev.mobile,
+      state: profile.state || prev.state,
+    }));
+  }, [profile]);
+
+  const handleSubmit = async () => {
+    setError("");
+    if (!formData.currentClass || !formData.goal) {
+      setError("Class and goal (JEE / NEET / Boards) are required.");
       return;
     }
-    if (formData.mobile.length !== 10 || !/^\d+$/.test(formData.mobile)) {
-      alert("Please enter a valid 10-digit mobile number");
+    if (formData.mobile && (formData.mobile.length !== 10 || !/^\d+$/.test(formData.mobile))) {
+      setError("Enter a valid 10-digit mobile number, or leave it blank.");
       return;
     }
-    alert("Form submitted!");
+    if (!currentUser?.uid) {
+      setError("Please sign in again.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await setDoc(
+        doc(db, "users", currentUser.uid),
+        {
+          currentClass: formData.currentClass,
+          goal: formData.goal,
+          examType: formData.goal,
+          mobile: formData.mobile || "",
+          contactNumber: formData.mobile || "",
+          state: formData.state || "",
+          email: currentUser.email || "",
+          name: currentUser.displayName || profile?.name || "",
+          role: profile?.role || "student",
+          updatedAt: new Date(),
+        },
+        { merge: true }
+      );
+      await refreshProfile();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error(err);
+      setError("Could not save details. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="sd-container">
       <div className="sd-wrapper">
         <h1 className="sd-title">Fill your Details</h1>
-        <p className="sd-subtitle">Help us personalize your learning journey</p>
+        <p className="sd-subtitle">Class and goal are required so we can show the right content.</p>
 
         <div className="sd-grid">
-          
-          {/* Current Class */}
           <div>
             <label className="sd-label">
               Current Class <Info size={16} className="sd-info" />
@@ -64,37 +110,25 @@ export default function StudentDetailsForm() {
             </select>
           </div>
 
-          {/* Goal */}
           <div>
             <label className="sd-label">
-              Goal (JEE / NEET) <Info size={16} className="sd-info" />
+              Goal (JEE / NEET / Boards) <Info size={16} className="sd-info" />
             </label>
 
             <div className="sd-goal-buttons">
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, goal: "JEE" })}
-                className={`sd-goal-btn ${
-                  formData.goal === "JEE" ? "active" : ""
-                }`}
-              >
-                JEE
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, goal: "NEET" })}
-                className={`sd-goal-btn ${
-                  formData.goal === "NEET" ? "active" : ""
-                }`}
-              >
-                NEET
-              </button>
+              {goalOptions.map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, goal: g })}
+                  className={`sd-goal-btn ${formData.goal === g ? "active" : ""}`}
+                >
+                  {g}
+                </button>
+              ))}
             </div>
-
           </div>
 
-          {/* Mobile Number */}
           <div>
             <label className="sd-label">
               Mobile Number <Info size={16} className="sd-info" />
@@ -112,7 +146,6 @@ export default function StudentDetailsForm() {
             />
           </div>
 
-          {/* State */}
           <div>
             <label className="sd-label">
               State <Info size={16} className="sd-info" />
@@ -132,18 +165,19 @@ export default function StudentDetailsForm() {
                 </option>
               ))}
             </select>
-
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="sd-actions">
-          <button type="button" className="sd-btn-cancel" onClick={() => navigate(-1)}>
-            Back
-          </button>
+        {error ? <p className="sd-error">{error}</p> : null}
 
-          <button type="button" onClick={handleSubmit} className="sd-btn-submit">
-            Continue
+        <div className="sd-actions">
+          <button
+            type="button"
+            className="sd-btn-submit"
+            onClick={handleSubmit}
+            disabled={saving}
+          >
+            {saving ? "Saving…" : "Continue"}
           </button>
         </div>
       </div>

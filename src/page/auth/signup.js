@@ -17,7 +17,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase.config';
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     salutation: 'Mr/ms',
     firstName: '',
     lastName: '',
@@ -27,7 +27,8 @@ const Signup = () => {
     city: '',
     state: '',
     schoolName: '',
-    currentClass: ''
+    currentClass: '',
+    goal: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -62,6 +63,7 @@ const Signup = () => {
     if (!formData.city.trim()) newErrors.city = 'Required';
     if (!formData.state) newErrors.state = 'Required';
     if (!formData.currentClass) newErrors.currentClass = 'Required';
+    if (!formData.goal) newErrors.goal = 'Required';
     return newErrors;
   };
 
@@ -80,6 +82,8 @@ const Signup = () => {
         await setDoc(doc(db, "users", response.user.uid), {
           ...formData,
           name: `${formData.firstName} ${formData.lastName}`,
+          examType: formData.goal,
+          role: 'student',
           createdAt: new Date()
         });
       } catch (profileErr) {
@@ -240,6 +244,25 @@ const Signup = () => {
                     {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
+              </div>
+            </div>
+
+            <div className={`modern-input-group full ${errors.goal ? 'error' : ''}`}>
+              <p className="signup-goal-label">Goal</p>
+              <div className="signup-goal-row">
+                {['JEE', 'NEET', 'Boards'].map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    className={`signup-goal-btn ${formData.goal === g ? 'is-active' : ''}`}
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, goal: g }));
+                      if (errors.goal) setErrors((prev) => ({ ...prev, goal: '' }));
+                    }}
+                  >
+                    {g}
+                  </button>
+                ))}
               </div>
             </div>
 
