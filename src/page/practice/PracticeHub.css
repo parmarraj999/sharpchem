@@ -207,15 +207,14 @@
   padding: 1.25rem 1.35rem;
   background: #fff;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   font-family: inherit;
 }
 
 .ph-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
-  border-color: rgba(37, 99, 235, 0.28);
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(30, 136, 229, 0.2);
 }
 
 .ph-card-top {
